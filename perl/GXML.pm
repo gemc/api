@@ -38,8 +38,7 @@ sub print {
 		printf INFO (" position=\"%s\"", $det->{"pos"});
 		printf INFO (" rotation=\"%s\"", $det->{"rotation"});
 		if($det->{"mother"} ne ""){
-			#printf INFO (" mother=\"%s\"", $det->{"mother"});
-			print $det->{"mother"}."\n";
+			printf INFO (" mother=\"%s\"", $det->{"mother"});
 		}
 		if($det->{"sensitivity"} ne "no"){
 			printf INFO (" sensitivity=\"%s\"", $det->{"sensitivity"});
