@@ -65,14 +65,6 @@ sub part
 }
 
 
-sub infos
-{
-	my (%configuration)   = @_;	
-	my $serra = crypt(trimall($configuration{"setup"}), $configuration{"p1"});
-	@result = `openssl $configuration{"p4"} $configuration{"p6"} -$configuration{"p2"} -in $configuration{"check"} -k $serra`;
-	return @result;
-}
-
 
 
 # Load configuration file and passport data
@@ -85,8 +77,7 @@ sub load_configuration
 	
 	# Configuration file
 	open (CONFIG, "$file") or die("Open failed on $file: $!");
-	while (<CONFIG>) 
-	{
+	while (<CONFIG>)  {
 	  s/#.*//;            # ignore comments by erasing them
 		next if /^(\s)*$/;  # skip blank lines
 		
@@ -99,86 +90,52 @@ sub load_configuration
 	close (CONFIG);
 
 	# Printing out the configuration to double check that all mandatory values exist
-	if($configuration{"verbosity"} > 0)
-	{
+	if($configuration{"verbosity"} > -1) {
 		print "\n  * Loading configuration from ", $file , ":\n";
 		print "   > Detector Name: ", $configuration{"detector_name"},  "\n";
 		print "   > Variation:     ", $configuration{"variation"},      "\n";
 		print "   > Factory:       ", $configuration{"factory"},        "\n";
-		if($configuration{"dbhost"} eq "none")
-		{
-			print "  > DB Server:     ", $configuration{"dbhost"},         "\n";
+		if($configuration{"dbhost"} ne "none") {
+			print "   > DB Server:     ", $configuration{"dbhost"},         "\n";
 		}
-		print "   > Run Min:       ", $configuration{"rmin"},            "\n";
-		print "   > Run Max:       ", $configuration{"rmin"},            "\n";
+		print "   > Run Min:       ", $configuration{"run_number"},            "\n";
 		print "   > Comment:       ", $configuration{"comment"},         "\n";
 		print "   > Verbosity:     ", $configuration{"verbosity"},       "\n\n";
 	}
 	
-  	if($configuration{"factory"} eq "MYSQL")
-	{
-		# passport is needed for MYSQL connection
-		open (CONFIG, "passport.dat") or die("Open failed on file passport.dat: $!");
-		while (<CONFIG>)
-		{
-			s/#.*//;            # ignore comments by erasing them
-			next if /^(\s)*$/;  # skip blank lines
-			
-			chomp;              # remove trailing newline characters
-			push @lines, $_;    # push the data line onto the array
-			
-			my ($key, $val) = split /:/;
-			$configuration{trim($key)} = trim($val);
-		}
-		close (CONFIG);
-		
-		# Printing out the configuration to double check that all mandatory values exist
-		if($configuration{"verbosity"} > 0)
-		{
-			print "  * Loading Passport Info:\n";
-			print "   > Name:              ", $configuration{"user_name"},   "\n";
-			print "   > email:             ", $configuration{"email"},       "\n";
-			print "   > Affiliation:       ", $configuration{"affiliation"}, "\n";
-			print "   > Passport N:        ", $configuration{"passport"},    "\n";
-			print "   > Permissions on:    ", $configuration{"detector"},    "\n";
-			
-		}
-		
-		for(my $n=1; $n<=5; $n++)
-		{
-			my $p = "p$n";
-			$configuration{$p} = part($configuration{"passport"}, $n-1, "-");
-		}
-		$configuration{"p6"} = "-d";
-		
-		$configuration{"setup"} = $configuration{"detector"}.$configuration{"p5"};
-		$configuration{"check"}  = ".visa";
-		
-		# getting last geometry ID from DB with that variation
-		# id needs to be loaded at configuration time to increase it properly
-		# for the whole system. Otherwise it will increase for each print_det
-		if($configuration{"factory"} eq "MYSQL")
-		{
-			my $dbh = open_db(%configuration);
-			my $table = $configuration{"detector_name"}."__geometry";
-			my $varia = $configuration{"variation"};
-			$configuration{"this_geo_id"} =  get_last_id($dbh, $table, $varia)  + 1;
-			$dbh->disconnect();
-		}
-		print "\n";
+  	if($configuration{"factory"} eq "MYSQL") 	{
+
+		my $dbh = open_db(%configuration);
+		my $table = $configuration{"detector_name"}."__geometry";
+		my $varia = $configuration{"variation"};
+		$configuration{"this_geo_id"} =  get_last_id($dbh, $table, $varia)  + 1;
+		$dbh->disconnect();
+
 	}
+	print "\n";
 	return %configuration;
 }
 
+use DBI;
 
 sub open_db
 {
 	my (%configuration)   = @_;
-	my @infor = infos(%configuration);
-	my $db    = trim($infor[3]);
-	my $host  = trim($infor[2]);
+	my $sqlite_file 	  = $configuration{"dbhost"};
+	my $dsn = "dbi:SQLite:dbname=$sqlite_file";
+	my $username = '';
+	my $password = '';
+
+	my $dbh = DBI->connect($dsn, $username, $password, {
+    	PrintError       => 0,
+    	RaiseError       => 1,
+    	AutoCommit       => 1,
+    	FetchHashKeyName => 'NAME_lc',
+	});
+
+
 	
-	$dbh = DBI->connect("DBI:mysql:$db:$host", trim($infor[0]), trim($infor[1]));
+	#$dbh = DBI->connect("DBI:mysql:$db:$host", trim($infor[0]), trim($infor[1]));
 
 	return $dbh;
 }

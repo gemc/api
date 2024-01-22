@@ -28,12 +28,11 @@ sub upload_parameters
 		(name, value, units, description, author, author_email, pdf_drawing_link, drawing_varname, drawing_authors, drawing_date) \
 		SET variation = '$varia', rmin = $rmin , rmax = $rmax , id = $next_id ");
 		
-		if($configuration{"verbosity"} > 1)
-	{
-		print " * Parameters uploaded in database: \n";
-		print_parameters(%configuration);
-		print " \n";
-	}
+		if($configuration{"verbosity"} > 1) {
+			print " * Parameters uploaded in database: \n";
+			print_parameters(%configuration);
+			print " \n";
+		}
 	print "   > This Parameter ID: ", $next_id,    "\n";
 	
 	$dbh->disconnect();
@@ -92,22 +91,19 @@ sub get_parameters
 	
 	# Text Factory. The parameter file is assumed to be present
 	# and named "parameters.txt"
-	if($configuration{"factory"} eq "TEXT")
-	{
+	if($configuration{"factory"} eq "TEXT") {
 		my  $file = $configuration{"detector_name"}."__parameters_".$varia.".txt";
 		open(FILE, $file) or die("Open failed on file $file: $!");
 		my @lines = <FILE>;
 		close(FILE);
- 		foreach my $line (@lines)
-		{
+ 		foreach my $line (@lines) {
 			my @numbers = split(/[|]+/,$line);
 			my ($pnam, $pval) = @numbers;
 			$parameters{trim($pnam)} = trim($pval);
 		}
 	}
 	
-	if($configuration{"factory"} eq "MYSQL")
-	{
+	if($configuration{"factory"} eq "MYSQL") {
 		my $dbh = open_db(%configuration);
 		
 		my $table   = $configuration{"detector_name"}."__parameters";
@@ -134,10 +130,8 @@ sub get_parameters
 	}
 	
 	
-	if($configuration{"verbosity"} > 0)
-	{
-		foreach my $key ( keys %parameters )
-		{
+	if($configuration{"verbosity"} > 0) {
+		foreach my $key ( keys %parameters ) {
 			print " * Parameter \"$key\" loaded with value: $parameters{$key} \n";
 		}
 	}

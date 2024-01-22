@@ -42,8 +42,8 @@ sub print_det
 	
 	my $table = $configuration{"detector_name"}."__geometry";
 	my $varia = $configuration{"variation"};
-	my $rmin  = $configuration{"rmin"};
-	my $rmax  = $configuration{"rmax"};
+	my $runno = $configuration{"run_number"};
+
 	
 	# converting the hash maps in local variables
 	# (this is necessary to parse the MYSQL command)
@@ -72,11 +72,10 @@ sub print_det
 	state $this_variation = "";
 	
 	# TEXT Factory
-	if($configuration{"factory"} eq "TEXT")
-	{
+	if($configuration{"factory"} eq "TEXT") {
+
 		my $file = $configuration{"detector_name"}."__geometry_".$varia.".txt";
-		if($counter == 0 || $this_variation ne  $varia)
-		{
+		if($counter == 0 || $this_variation ne  $varia) {
 			`rm -f $file`;
 			print "Overwriting if existing: ",  $file, "\n";
 			$counter = 1;
@@ -103,11 +102,12 @@ sub print_det
 		printf INFO ("%20s  |", $lhit_type);
 		printf INFO ("%40s \n", $lidentifiers);
 		close(INFO);
+
 	}
 	
 	# MYSQL Factory
-	if($configuration{"factory"} eq "MYSQL")
-	{
+	if($configuration{"factory"} eq "MYSQL") {
+
 		my $dbh = open_db(%configuration);
 		my $next_id = $configuration{"this_geo_id"};
 		
@@ -124,13 +124,50 @@ sub print_det
 			values(    ?,        ?,             ?,     ?,          ?,       ?,      ?,            ?,          ?,        ?,       ?,       ?,       ?,         ?,       ?,             ?,          ?,             ?,      ?,      ?,           ?,       ?)",  undef,
 			      $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers,  $rmin,  $rmax,      $varia, $next_id);
 		
-		if($configuration{"verbosity"} > 0 && $dbq == 1)
-		{
+		if($configuration{"verbosity"} > 0 && $dbq == 1) {
 			print "  + Detector element $lname uploaded successfully for variation \"$varia\" rmin=$rmin  rmax=$rmax  \n";
 		}
 		$dbh->disconnect();
 	}
-	
+
+	# CSQL Factory
+	if($configuration{"factory"} eq "SQLITE") {
+
+		my $dbh = open_db(%configuration);
+		my $system = $configuration{"detector_name"};
+		my $names_string = "system, variation, run, name, mother, description, pos, rot, col, type, dimensions, material, magfield, ncopy, pMany, exist, visible, style, sensitivity, hitType, identity";
+
+		# for each name in $names_string, we need to add a ? to the values string
+	    my $qvalues_string = "";
+	    my @names = split(/\s+/, $names_string);
+	    foreach my $name (@names) {
+	    	$qvalues_string = $qvalues_string . "?, ";
+	    }
+	    # remove last comma from $qvalues_string
+	    $qvalues_string = substr($qvalues_string, 0, -2);
+
+	#	my $values_string = "'$system', '$varia', '$runno',  '$lname', '$lmother', '$ldescription', '$lpos', '$lrotation', '$lcolor', '$ltype', '$ldimensions', '$lmaterial', '$lmfield', '$lncopy', '$lpMany', '$lexist', '$lvisible', '$lstyle', '$lsensitivity', '$lhit_type', '$lidentifiers', ";
+#
+#	    # SQL statement for inserting a row
+#    	#my $sql = "INSERT INTO geometry (name, email, address) VALUES (?, ?, ?)";
+    	my $sql = "INSERT INTO geometry ($names_string) VALUES ($qvalues_string)";
+
+    	# print sql statement
+    	#print "sql: $sql\n";
+#
+#    	# Prepare and execute the SQL statement
+    	my $sth = $dbh->prepare($sql);
+    	$sth->execute($system, $varia, $runno,  $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers);
+
+
+#		print "  + Detector element $lname uploaded successfully for variation \"$varia\", run number $runno \n";
+
+
+#
+#		my $dbq = $dbh->do("insert into $table ( \
+#				    name,   mother,   description,   pos,        rot,     col,   type,   dimensions,   material, magfield,   ncopy,   pMany,   exist,   visible,   style,   sensitivity,    hitType,      identity,   rmin,   rmax,   variation,      id) \
+
+	}
 }
 
 
