@@ -2,6 +2,7 @@ package geometry;
 require Exporter;
 
 use lib ("$ENV{GEMC}/io");
+use warnings;
 use utils;
 use 5.010;
 
@@ -135,6 +136,16 @@ sub print_det
 
 		my $dbh = open_db(%configuration);
 		my $system = $configuration{"detector_name"};
+
+		# first time this module is run, delete everything in geometry table for this variation, system and run number
+		if($counter == 0) {
+			my $sql = "DELETE FROM geometry WHERE system = ?";
+			my $sth = $dbh->prepare($sql);
+			$sth->execute($system);
+			print "   > Deleted all geometry for system $system \n";
+			$counter = 1;
+		}
+
 		my $names_string = "system, variation, run, name, mother, description, pos, rot, col, type, dimensions, material, magfield, ncopy, pMany, exist, visible, style, sensitivity, hitType, identity";
 
 		# for each name in $names_string, we need to add a ? to the values string
@@ -146,26 +157,11 @@ sub print_det
 	    # remove last comma from $qvalues_string
 	    $qvalues_string = substr($qvalues_string, 0, -2);
 
-	#	my $values_string = "'$system', '$varia', '$runno',  '$lname', '$lmother', '$ldescription', '$lpos', '$lrotation', '$lcolor', '$ltype', '$ldimensions', '$lmaterial', '$lmfield', '$lncopy', '$lpMany', '$lexist', '$lvisible', '$lstyle', '$lsensitivity', '$lhit_type', '$lidentifiers', ";
-#
-#	    # SQL statement for inserting a row
-#    	#my $sql = "INSERT INTO geometry (name, email, address) VALUES (?, ?, ?)";
-    	my $sql = "INSERT INTO geometry ($names_string) VALUES ($qvalues_string)";
+    	my $sql = "INSERT OR REPLACE INTO geometry ($names_string) VALUES ($qvalues_string)";
 
-    	# print sql statement
-    	#print "sql: $sql\n";
-#
-#    	# Prepare and execute the SQL statement
     	my $sth = $dbh->prepare($sql);
     	$sth->execute($system, $varia, $runno,  $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers);
 
-
-#		print "  + Detector element $lname uploaded successfully for variation \"$varia\", run number $runno \n";
-
-
-#
-#		my $dbq = $dbh->do("insert into $table ( \
-#				    name,   mother,   description,   pos,        rot,     col,   type,   dimensions,   material, magfield,   ncopy,   pMany,   exist,   visible,   style,   sensitivity,    hitType,      identity,   rmin,   rmax,   variation,      id) \
 
 	}
 }
