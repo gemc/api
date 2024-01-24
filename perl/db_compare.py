@@ -21,7 +21,7 @@ def compare_with_database( line, cursor, system, runno, variation, nlines, index
 
 	# if the fetch is 1, then the line is in the database. Print the line index with nlines.
 	if result is not None:
-		print( f"Line {index} out of {nlines} is in the database." , end='\r')
+		print( f"Line {index+1} out of {nlines} is in the database." , end='\r')
 
 
 	# Check if the result is not None, indicating a match
