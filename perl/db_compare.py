@@ -4,7 +4,7 @@ import sys
 import sqlite3
 
 
-def compare_with_database( line, cursor, system, runno, variation ):
+def compare_with_database( line, cursor, system, runno, variation, nlines, index ):
 	# Split the line into fields
 	fields = line.split( '|' )
 
@@ -19,16 +19,16 @@ def compare_with_database( line, cursor, system, runno, variation ):
 	# Fetch the result
 	result = cursor.fetchone()
 
-	# if the fetch is 1, then the line is in the database. Print the name of the volume
+	# if the fetch is 1, then the line is in the database. Print the line index with nlines.
 	if result is not None:
-		print( f"Comparison with {result[4]} succeeded." )
+		print( f"Line {index} out of {nlines} is in the database." , end='\r')
+
 
 	# Check if the result is not None, indicating a match
 	return result is not None
 
 
 def main():
-	# file_path is first argument to this file
 	file_path = sys.argv[1]
 	database_path = sys.argv[2]
 	system = sys.argv[3]
@@ -41,18 +41,34 @@ def main():
 		# Connect to the database
 		connection = sqlite3.connect( database_path )
 		cursor = connection.cursor()
+		nlines = 0
 
 		with open( file_path, 'r' ) as file:
 			lines = file.readlines()
 
+		# check that the number of lines in the file is the same as the number of lines in the database
+		query = f"SELECT COUNT(*) FROM {table_name} WHERE system=? and run=? and variation=?"
+		cursor.execute( query, ( system, runno, variation ) )
+		result = cursor.fetchone()
+		if result is not None:
+			nlines = result[0]
+			if nlines != len( lines ):
+				print( f"\nNumber of lines in the file ({len( lines )}) does not match the number of lines in the database ({result[0]})." )
+			else:
+				print( f"\nNumber of lines in the file ({len( lines )}) matches the number of lines in the database ({result[0]})." )
+
+
+
 		# Compare each line with the database
 		for i, line in enumerate( lines ):
-			if not compare_with_database( line, cursor, system, runno, variation ):
+			if not compare_with_database( line, cursor, system, runno, variation, nlines, i ):
 				print( f"Line {i + 1} does not match the database." )
 				print ( line )
 				break
 		else:
-			print( "All lines match the database." )
+			print( "\nAll lines match the database." )
+
+
 
 	except FileNotFoundError:
 		print( f"File '{file_path}' not found." )

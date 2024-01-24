@@ -69,17 +69,19 @@ sub print_det
 	my $lidentifiers = trim($det{"identifiers"});
 	
 	# after 5.10 once can use "state" to use a static variable`
-	state $counter = 0;
+	state $counter_text = 0;
+	state $counter_mysql = 0;
+	state $counter_sqlite = 0;
 	state $this_variation = "";
 	
 	# TEXT Factory
 	if($configuration{"factory"} eq "TEXT") {
 
 		my $file = $configuration{"detector_name"}."__geometry_".$varia.".txt";
-		if($counter == 0 || $this_variation ne  $varia) {
+		if($counter_text == 0 || $this_variation ne  $varia) {
 			`rm -f $file`;
 			print "Overwriting if existing: ",  $file, "\n";
-			$counter = 1;
+			$counter_text = 1;
 			$this_variation = $varia;
 		}
 
@@ -113,11 +115,10 @@ sub print_det
 		my $next_id = $configuration{"this_geo_id"};
 		
 		# after 5.10 once can use "state" to use a static variable`
-		if($counter == 0)
-		{
+		if($counter_mysql == 0) {
 			print "   > Last Geometry ID: ", $next_id;
 			print "\n \n";
-			$counter = 1;
+			$counter_mysql = 1;
 		}
 		
 		my $dbq = $dbh->do("insert into $table ( \
@@ -138,12 +139,12 @@ sub print_det
 		my $system = $configuration{"detector_name"};
 
 		# first time this module is run, delete everything in geometry table for this variation, system and run number
-		if($counter == 0) {
+		if($counter_sqlite == 0) {
 			my $sql = "DELETE FROM geometry WHERE system = ?";
 			my $sth = $dbh->prepare($sql);
 			$sth->execute($system);
 			print "   > Deleted all geometry for system $system \n";
-			$counter = 1;
+			$counter_sqlite = 1;
 		}
 
 		my $names_string = "system, variation, run, name, mother, description, pos, rot, col, type, dimensions, material, magfield, ncopy, pMany, exist, visible, style, sensitivity, hitType, identity";

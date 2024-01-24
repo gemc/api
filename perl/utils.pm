@@ -74,7 +74,10 @@ sub load_configuration
 	my %configuration = (); 
 	
 	$configuration{"dbhost"} = "none";
-	
+	$configuration{"factory"} = "TEXT";
+	$configuration{"variation"} = "default";
+	$configuration{"run_number"} = 11;
+
 	# Configuration file
 	open (CONFIG, "$file") or die("Open failed on $file: $!");
 	while (<CONFIG>)  {
@@ -116,6 +119,7 @@ sub load_configuration
 	return %configuration;
 }
 
+use warnings;
 use DBI;
 
 sub open_db
