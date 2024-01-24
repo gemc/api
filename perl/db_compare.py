@@ -9,12 +9,12 @@ def compare_with_database( line, cursor, system, runno, variation, nlines, index
 	fields = line.split( '|' )
 
 	# Extract values from the line
-	name, mother, dummy1, pos, rot, color, shape, shape_params, material, *other = [
+	name, mother, dummy1, pos, rot, color, shape, shape_params, material, magfield, dummy2, dummy3, exist, visible, style, sensitivity, hitType, identity = [
 		f.strip() for f in fields ]
 
 	# Query the database using the extracted values
-	query = f"SELECT * FROM geometry WHERE name=? AND mother=? AND pos=? AND rot=? AND col=? AND type=? AND dimensions=? AND material=? and system=? and run=? and variation=?"
-	cursor.execute( query, ( name, mother, pos, rot, color, shape, shape_params, material, system, runno, variation ) )
+	query = f"SELECT * FROM geometry WHERE name=? AND mother=? AND pos=? AND rot=? AND col=? AND type=? AND dimensions=? AND material=? and magfield=? and exist=? and visible=? and style=? and sensitivity=? and hitType=? and identity=? and system=? and run=? and variation=?"
+	cursor.execute( query, ( name, mother, pos, rot, color, shape, shape_params, material, magfield, exist, visible, style, sensitivity, hitType, identity, system, runno, variation ) )
 
 	# Fetch the result
 	result = cursor.fetchone()
