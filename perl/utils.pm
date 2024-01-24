@@ -96,12 +96,9 @@ sub load_configuration
 	if($configuration{"verbosity"} > -1) {
 		print "\n  * Loading configuration from ", $file , ":\n";
 		print "   > Detector Name: ", $configuration{"detector_name"},  "\n";
-		print "   > Variation:     ", $configuration{"variation"},      "\n";
-		print "   > Factory:       ", $configuration{"factory"},        "\n";
 		if($configuration{"dbhost"} ne "none") {
 			print "   > DB Server:     ", $configuration{"dbhost"},         "\n";
 		}
-		print "   > Run Min:       ", $configuration{"run_number"},            "\n";
 		print "   > Comment:       ", $configuration{"comment"},         "\n";
 		print "   > Verbosity:     ", $configuration{"verbosity"},       "\n\n";
 	}
