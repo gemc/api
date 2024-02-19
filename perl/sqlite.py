@@ -47,6 +47,32 @@ class GVolume:
 		self.hitType = OPTIONAL
 		self.identity = OPTIONAL
 
+class GMaterial:
+
+	def __init__( self ):
+		# mandatory fields. Checked at publish time
+		self.name = NGIVEN
+		self.description = MANDATORY
+		self.density = MANDATORY
+		self.ncomponents = MANDATORY
+		self.components = MANDATORY
+		self.photonEnergy = MANDATORY
+		self.indexOfRefraction = MANDATORY
+		self.absorptionLength = MANDATORY
+		self.reflectivity = MANDATORY
+		self.efficiency = MANDATORY
+		self.fastcomponent = MANDATORY
+		self.slowcomponent = MANDATORY
+		self.scintillationyield = MANDATORY
+		self.resolutionscale = MANDATORY
+		self.fasttimeconstant = MANDATORY
+		self.slowtimeconstant = MANDATORY
+		self.yieldratio = MANDATORY
+		self.rayleigh = MANDATORY
+		self.birkConstant = MANDATORY
+
+
+
 
 def main():
 	# Provides the -h, --help message
@@ -93,6 +119,7 @@ def main():
 		create_sqlite_database( sqlitedb )
 
 		add_geometry_fields_to_sqlite_if_needed(  GVolume(), sqlitedb )
+		add_materials_fields_to_sqlite_if_needed( GMaterial(), sqlitedb )
 
 
 	if args.l != NGIVEN:

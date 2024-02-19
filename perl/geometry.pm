@@ -14,7 +14,7 @@ use 5.010;
 sub init_det
 {
 	my %detector = ();
-	
+
 	# These default value can be left off on the API
 	$detector{"description"} = "no description";
 	$detector{"pos"}         = "0 0 0";
@@ -30,7 +30,7 @@ sub init_det
 	$detector{"sensitivity"} = "no";
 	$detector{"hit_type"}    = "no";
 	$detector{"identifiers"} = "no";
-	
+
 	return %detector;
 }
 
@@ -40,15 +40,14 @@ sub print_det
 {
 	my %configuration = %{+shift};
 	my %det           = %{+shift};
-	
+
 	my $table = $configuration{"detector_name"}."__geometry";
 	my $varia = $configuration{"variation"};
 	my $runno = $configuration{"run_number"};
 
-	
 	# converting the hash maps in local variables
 	# (this is necessary to parse the MYSQL command)
-	
+
 	my $lname        = trim($det{"name"});
 	my $lmother      = trim($det{"mother"});
 	my $ldescription = trim($det{"description"});
@@ -67,13 +66,13 @@ sub print_det
 	my $lsensitivity = trim($det{"sensitivity"});
 	my $lhit_type    = trim($det{"hit_type"});
 	my $lidentifiers = trim($det{"identifiers"});
-	
+
 	# after 5.10 once can use "state" to use a static variable`
 	state $counter_text = 0;
 	state $counter_mysql = 0;
 	state $counter_sqlite = 0;
 	state $this_variation = "";
-	
+
 	# TEXT Factory
 	if($configuration{"factory"} eq "TEXT") {
 
@@ -86,6 +85,7 @@ sub print_det
 		}
 
 		open(INFO, ">>$file");
+        # notice INFO( will not work, there has to be a space after INFO
 		printf INFO ("%20s  |", $lname);
 		printf INFO ("%20s  |", $lmother);
 		printf INFO ("%30s  |", $ldescription);
@@ -107,32 +107,32 @@ sub print_det
 		close(INFO);
 
 	}
-	
+
 	# MYSQL Factory
 	if($configuration{"factory"} eq "MYSQL") {
 
 		my $dbh = open_db(%configuration);
 		my $next_id = $configuration{"this_geo_id"};
-		
+
 		# after 5.10 once can use "state" to use a static variable`
 		if($counter_mysql == 0) {
 			print "   > Last Geometry ID: ", $next_id;
 			print "\n \n";
 			$counter_mysql = 1;
 		}
-		
+
 		my $dbq = $dbh->do("insert into $table ( \
 				    name,   mother,   description,   pos,        rot,     col,   type,   dimensions,   material, magfield,   ncopy,   pMany,   exist,   visible,   style,   sensitivity,    hitType,      identity,   rmin,   rmax,   variation,      id) \
 			values(    ?,        ?,             ?,     ?,          ?,       ?,      ?,            ?,          ?,        ?,       ?,       ?,       ?,         ?,       ?,             ?,          ?,             ?,      ?,      ?,           ?,       ?)",  undef,
 			      $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers,  $rmin,  $rmax,      $varia, $next_id);
-		
+
 		if($configuration{"verbosity"} > 0 && $dbq == 1) {
 			print "  + Detector element $lname uploaded successfully for variation \"$varia\" rmin=$rmin  rmax=$rmax  \n";
 		}
 		$dbh->disconnect();
 	}
 
-	# CSQL Factory
+	# SQLITEs Factory
 	if($configuration{"factory"} eq "SQLITE") {
 
 		my $dbh = open_db(%configuration);
@@ -143,7 +143,7 @@ sub print_det
 			my $sql = "DELETE FROM geometry WHERE system = ?";
 			my $sth = $dbh->prepare($sql);
 			$sth->execute($system);
-			print "   > Deleted all geometry for system $system \n";
+			print "   > Deleted all volumes for system $system \n";
 			$counter_sqlite = 1;
 		}
 
@@ -163,14 +163,8 @@ sub print_det
     	my $sth = $dbh->prepare($sql);
     	$sth->execute($system, $varia, $runno,  $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers);
 
-
 	}
 }
 
 
 1;
-
-
-
-
-
