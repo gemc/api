@@ -194,7 +194,7 @@ def create_sqlite_database( sqlitedb ):
 	# Create materials table with one column
 	sql.execute( '''CREATE TABLE materials (id integer primary key)''' )
 
-	# Create materials table with one column
+	# Create materials table with no columns
 	sql.execute( '''CREATE TABLE banks (id integer primary key)''' )
 
 	# Save (commit) the changes
@@ -247,8 +247,6 @@ def add_bank_fields_to_sqlite_if_needed( gbank, sqlitedb ):
 	# if there is only one column, add the columns
 	if len( fields ) == 1:
 		add_column( sqlitedb, "banks", "system", "TEXT" )
-		add_column( sqlitedb, "banks", "variation", "TEXT" )
-		add_column( sqlitedb, "banks", "run", "INTEGER" )
 		# add columns from gbank class
 		for field in gbank.__dict__:
 			sql_type = sqltype_of_variable( gbank.__dict__[ field ] )

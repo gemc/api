@@ -200,7 +200,7 @@ sub print_mat {
         # remove last comma from $qvalues_string
         $qvalues_string = substr($qvalues_string, 0, -2);
 
-        my $sql = "INSERT OR REPLACE INTO materials ($mnames_string) VALUES ($qvalues_string)";
+        my $sql = "INSERT INTO materials ($mnames_string) VALUES ($qvalues_string)";
 
         my $sth = $dbh->prepare($sql);
         $sth->execute($system, $varia, $runno, $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant)

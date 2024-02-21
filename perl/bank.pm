@@ -71,8 +71,8 @@ sub insert_bank_variable
             $counter_sqlite = 1;
         }
 
-        my $mnames_string = "system, variation, run, variable_name, description, int_id, type";
-        my $mvalues_string = "?, ?, ?, ?, ?, ?, ?";
+        my $mnames_string = "system, variable_name, description, int_id, type";
+        my $mvalues_string = "?, ?, ?, ?, ?";
 
         # for each name in $mnames_string, we need to add a ? to the values string
         my $qvalues_string = "";
@@ -83,10 +83,10 @@ sub insert_bank_variable
         # remove last comma from $qvalues_string
         $qvalues_string = substr($qvalues_string, 0, -2);
 
-        my $sql = "INSERT OR REPLACE INTO banks ($mnames_string) VALUES ($qvalues_string)";
+        my $sql = "INSERT INTO banks ($mnames_string) VALUES ($qvalues_string)";
 
         my $sth = $dbh->prepare($sql);
-        $sth->execute($system, $varia, $runno, $lname, $ldescription, $lnum, $ltype)
+        $sth->execute($system, $lname, $ldescription, $lnum, $ltype)
 			or die "Can't execute insert statement: $DBI::errstr";
 
 	}

@@ -139,7 +139,7 @@ sub print_det
 	    # remove last comma from $qvalues_string
 	    $qvalues_string = substr($qvalues_string, 0, -2);
 
-    	my $sql = "INSERT OR REPLACE INTO geometry ($names_string) VALUES ($qvalues_string)";
+    	my $sql = "INSERT INTO geometry ($names_string) VALUES ($qvalues_string)";
 
     	my $sth = $dbh->prepare($sql);
     	$sth->execute($system, $varia, $runno,  $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers)
