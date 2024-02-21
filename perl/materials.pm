@@ -48,7 +48,6 @@ sub print_mat {
     my %configuration = %{+shift};
     my %mats = %{+shift};
 
-    my $table = $configuration{"detector_name"} . "__materials";
 	my $varia = $configuration{"variation"};
 	my $runno = $configuration{"run_number"};
 
@@ -173,19 +172,7 @@ sub print_mat {
     # MYSQL Factory
     my $err;
     if ($configuration{"factory"} eq "MYSQL") {
-        my $dbh = open_db(%configuration);
 
-        $dbh->do("insert into $table( \
-			          name,     description,     density,    ncomponents,    components,    photonEnergy,    indexOfRefraction,    absorptionLength,    reflectivity,   efficiency,   fastcomponent,   slowcomponent,   scintillationyield,   resolutionscale,   fasttimeconstant,   slowtimeconstant,   yieldratio,  rayleigh,   birkConstant,  variation) \
-			values(      ?,               ?,           ?,              ?,             ?,               ?,                    ?,                   ?,               ?,            ?,               ?,               ?,                    ?,                 ?,                  ?,                  ?,            ?,         ?,              ?,            ?)   ON DUPLICATE KEY UPDATE \
-			        name=?,   description=?,   density=?,  ncomponents=?,  components=?,  photonEnergy=?,  indexOfRefraction=?,  absorptionLength=?,  reflectivity=?, efficiency=?, fastcomponent=?, slowcomponent=?, scintillationyield=?, resolutionscale=?, fasttimeconstant=?, slowtimeconstant=?, yieldratio=?,rayleigh=?, birkConstant=?,  variation=?, \
-			        time=CURRENT_TIMESTAMP", undef,
-            $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant, $varia,
-            $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant, $varia)
-
-            or die "SQL Error: $DBI::errstr\n";
-
-        $dbh->disconnect();
     }
 
     # SQLITE Factory
@@ -216,7 +203,8 @@ sub print_mat {
         my $sql = "INSERT OR REPLACE INTO materials ($mnames_string) VALUES ($qvalues_string)";
 
         my $sth = $dbh->prepare($sql);
-        $sth->execute($system, $varia, $runno, $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant);
+        $sth->execute($system, $varia, $runno, $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant)
+        	or die "SQL Error: $DBI::errstr\n";
 
     }
 

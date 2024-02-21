@@ -41,7 +41,6 @@ sub print_det
 	my %configuration = %{+shift};
 	my %det           = %{+shift};
 
-	my $table = $configuration{"detector_name"}."__geometry";
 	my $varia = $configuration{"variation"};
 	my $runno = $configuration{"run_number"};
 
@@ -111,25 +110,7 @@ sub print_det
 	# MYSQL Factory
 	if($configuration{"factory"} eq "MYSQL") {
 
-		my $dbh = open_db(%configuration);
-		my $next_id = $configuration{"this_geo_id"};
 
-		# after 5.10 once can use "state" to use a static variable`
-		if($counter_mysql == 0) {
-			print "   > Last Geometry ID: ", $next_id;
-			print "\n \n";
-			$counter_mysql = 1;
-		}
-
-		my $dbq = $dbh->do("insert into $table ( \
-				    name,   mother,   description,   pos,        rot,     col,   type,   dimensions,   material, magfield,   ncopy,   pMany,   exist,   visible,   style,   sensitivity,    hitType,      identity,   rmin,   rmax,   variation,      id) \
-			values(    ?,        ?,             ?,     ?,          ?,       ?,      ?,            ?,          ?,        ?,       ?,       ?,       ?,         ?,       ?,             ?,          ?,             ?,      ?,      ?,           ?,       ?)",  undef,
-			      $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers,  $rmin,  $rmax,      $varia, $next_id);
-
-		if($configuration{"verbosity"} > 0 && $dbq == 1) {
-			print "  + Detector element $lname uploaded successfully for variation \"$varia\" rmin=$rmin  rmax=$rmax  \n";
-		}
-		$dbh->disconnect();
 	}
 
 	# SQLITEs Factory
@@ -161,7 +142,8 @@ sub print_det
     	my $sql = "INSERT OR REPLACE INTO geometry ($names_string) VALUES ($qvalues_string)";
 
     	my $sth = $dbh->prepare($sql);
-    	$sth->execute($system, $varia, $runno,  $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers);
+    	$sth->execute($system, $varia, $runno,  $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers)
+    				or die "Can't execute insert statement: $DBI::errstr";
 
 	}
 }

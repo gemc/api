@@ -71,8 +71,12 @@ class GMaterial:
 		self.rayleigh = MANDATORY
 		self.birkConstant = MANDATORY
 
-
-
+class GBank:
+	def __init__( self ):
+		self.variable_name = NGIVEN
+		self.description = MANDATORY
+		self.int_id = MANDATORY
+		self.type = MANDATORY
 
 def main():
 	# Provides the -h, --help message
@@ -118,8 +122,9 @@ def main():
 		sqlitedb = sqlite3.connect( sqlitedb_file )
 		create_sqlite_database( sqlitedb )
 
-		add_geometry_fields_to_sqlite_if_needed(  GVolume(), sqlitedb )
+		add_geometry_fields_to_sqlite_if_needed(  GVolume(),   sqlitedb )
 		add_materials_fields_to_sqlite_if_needed( GMaterial(), sqlitedb )
+		add_bank_fields_to_sqlite_if_needed(      GBank(),     sqlitedb )
 
 
 	if args.l != NGIVEN:
@@ -189,12 +194,15 @@ def create_sqlite_database( sqlitedb ):
 	# Create materials table with one column
 	sql.execute( '''CREATE TABLE materials (id integer primary key)''' )
 
+	# Create materials table with one column
+	sql.execute( '''CREATE TABLE banks (id integer primary key)''' )
+
 	# Save (commit) the changes
 	sqlitedb.commit()
 
 
 def add_geometry_fields_to_sqlite_if_needed( gvolume, sqlitedb ):
-	# check if the geometry table has the geometry columns
+	# check if the geometry table has any columns
 	sql = sqlitedb.cursor()
 	sql.execute( "SELECT name FROM PRAGMA_TABLE_INFO('geometry');" )
 	fields = sql.fetchall()
@@ -212,7 +220,7 @@ def add_geometry_fields_to_sqlite_if_needed( gvolume, sqlitedb ):
 
 
 def add_materials_fields_to_sqlite_if_needed( gmaterial, sqlitedb ):
-	# check if the geometry table has the geometry columns
+	# check if the materials table has any columns
 	sql = sqlitedb.cursor()
 	sql.execute( "SELECT name FROM PRAGMA_TABLE_INFO('materials');" )
 	fields = sql.fetchall()
@@ -230,7 +238,22 @@ def add_materials_fields_to_sqlite_if_needed( gmaterial, sqlitedb ):
 	sqlitedb.commit()
 
 
+def add_bank_fields_to_sqlite_if_needed( gbank, sqlitedb ):
+	# check if the banks table has any columns
+	sql = sqlitedb.cursor()
+	sql.execute( "SELECT name FROM PRAGMA_TABLE_INFO('banks');" )
+	fields = sql.fetchall()
 
+	# if there is only one column, add the columns
+	if len( fields ) == 1:
+		add_column( sqlitedb, "banks", "system", "TEXT" )
+		add_column( sqlitedb, "banks", "variation", "TEXT" )
+		add_column( sqlitedb, "banks", "run", "INTEGER" )
+		# add columns from gbank class
+		for field in gbank.__dict__:
+			sql_type = sqltype_of_variable( gbank.__dict__[ field ] )
+			add_column( sqlitedb, "banks", field, sql_type )
+	sqlitedb.commit()
 
 
 
