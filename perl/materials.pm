@@ -58,6 +58,8 @@ sub print_mat {
     my $ldensity = trim($mats{"density"});
     my $lncomponents = trim($mats{"ncomponents"});
     my $lcomponents = trim($mats{"components"});
+
+    # optical properties
     my $lphotonEnergy = trim($mats{"photonEnergy"});
     my $lindexOfRefraction = trim($mats{"indexOfRefraction"});
     my $labsorptionLength = trim($mats{"absorptionLength"});
@@ -107,6 +109,7 @@ sub print_mat {
             printf INFO ("%5s  |", $labsorptionLength);
             printf INFO ("%5s  |", $lreflectivity);
             printf INFO ("%5s  |", $lefficiency);
+
             # scintillation
             printf INFO ("%5s  |", $lfastcomponent);
             printf INFO ("%5s  |", $lslowcomponent);

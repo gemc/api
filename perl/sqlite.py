@@ -73,10 +73,27 @@ class GMaterial:
 
 class GBank:
 	def __init__( self ):
-		self.variable_name = NGIVEN
+		self.bank_name = NGIVEN
+		self.variable_name = MANDATORY
 		self.description = MANDATORY
 		self.int_id = MANDATORY
 		self.type = MANDATORY
+
+class GHit:
+	def __init__( self ):
+		self.name = NGIVEN
+		self.description = MANDATORY
+		self.identifiers = MANDATORY
+		self.SignalThreshold = MANDATORY
+		self.TimeWindow = MANDATORY
+		self.ProdThreshold = MANDATORY
+		self.MaxStep = MANDATORY
+		self.riseTime = MANDATORY
+		self.fallTime = MANDATORY
+		self.mvToMeV = MANDATORY
+		self.pedestal = MANDATORY
+		self.delay = MANDATORY
+
 
 def main():
 	# Provides the -h, --help message
@@ -125,6 +142,7 @@ def main():
 		add_geometry_fields_to_sqlite_if_needed(  GVolume(),   sqlitedb )
 		add_materials_fields_to_sqlite_if_needed( GMaterial(), sqlitedb )
 		add_bank_fields_to_sqlite_if_needed(      GBank(),     sqlitedb )
+		add_hit_fields_to_sqlite_if_needed(       GHit(),      sqlitedb )
 
 
 	if args.l != NGIVEN:
@@ -194,8 +212,11 @@ def create_sqlite_database( sqlitedb ):
 	# Create materials table with one column
 	sql.execute( '''CREATE TABLE materials (id integer primary key)''' )
 
-	# Create materials table with no columns
+	# Create materials table with one column
 	sql.execute( '''CREATE TABLE banks (id integer primary key)''' )
+
+	# Create materials table with one column
+	sql.execute( '''CREATE TABLE hits (id integer primary key)''' )
 
 	# Save (commit) the changes
 	sqlitedb.commit()
@@ -253,6 +274,23 @@ def add_bank_fields_to_sqlite_if_needed( gbank, sqlitedb ):
 			add_column( sqlitedb, "banks", field, sql_type )
 	sqlitedb.commit()
 
+def add_hit_fields_to_sqlite_if_needed( ghit, sqlitedb ):
+	# check if the banks table has any columns
+	sql = sqlitedb.cursor()
+	sql.execute( "SELECT name FROM PRAGMA_TABLE_INFO('hits');" )
+	fields = sql.fetchall()
+
+	# if there is only one column, add the columns
+	if len( fields ) == 1:
+		add_column( sqlitedb, "hits", "system", "TEXT" )
+		add_column( sqlitedb, "hits", "variation", "TEXT" )
+		add_column( sqlitedb, "hits", "run", "INTEGER" )
+
+		# add columns from ghit class
+		for field in ghit.__dict__:
+			sql_type = sqltype_of_variable( ghit.__dict__[ field ] )
+			add_column( sqlitedb, "hits", field, sql_type )
+	sqlitedb.commit()
 
 
 def sqltype_of_variable( variable ) -> str:

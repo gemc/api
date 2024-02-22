@@ -71,8 +71,8 @@ sub insert_bank_variable
             $counter_sqlite = 1;
         }
 
-        my $mnames_string = "system, variable_name, description, int_id, type";
-        my $mvalues_string = "?, ?, ?, ?, ?";
+        my $mnames_string = "system, bank_name, variable_name, description, int_id, type";
+        my $mvalues_string = "?, ?, ?, ?, ?, ?";
 
         # for each name in $mnames_string, we need to add a ? to the values string
         my $qvalues_string = "";
@@ -86,9 +86,8 @@ sub insert_bank_variable
         my $sql = "INSERT INTO banks ($mnames_string) VALUES ($qvalues_string)";
 
         my $sth = $dbh->prepare($sql);
-        $sth->execute($system, $lname, $ldescription, $lnum, $ltype)
+        $sth->execute($system, $bname, $lname, $ldescription, $lnum, $ltype)
 			or die "Can't execute insert statement: $DBI::errstr";
-
 	}
 
 	if($configuration{"verbosity"} > 0) {
