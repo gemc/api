@@ -181,14 +181,14 @@ sub print_mat {
             if ($lrayleigh eq "none") {printf INFO ("%5s |", $lrayleigh);}
             else {printf INFO ("%s  |", $lrayleigh);}
             # Birk constant
-            if ($lbirkConstant eq "-1") {printf INFO ("%5s\n", $lbirkConstant);}
+            if ($lbirkConstant eq "-1") {printf INFO ("%5s |", $lbirkConstant);}
             else {printf INFO ("%s  |", $lbirkConstant);}
             # Mie scattering
             if ($lmie eq "none") {printf INFO ("%5s |", $lmie);}
             else {printf INFO ("%s  |", $lmie);}
-            if ($lmieforward eq "-1") {printf INFO ("%5s\n", $lmieforward);}
+            if ($lmieforward eq "-1") {printf INFO ("%5s |", $lmieforward);}
             else {printf INFO ("%s  |", $lmieforward);}
-            if ($lmiebackward eq "-1") {printf INFO ("%5s\n", $lmiebackward);}
+            if ($lmiebackward eq "-1") {printf INFO ("%5s |", $lmiebackward);}
             else {printf INFO ("%s  |", $lmiebackward);}
             if ($lmieratio eq "-1") {printf INFO ("%5s\n", $lmieratio);}
             else {printf INFO ("%s \n", $lmieratio);}
