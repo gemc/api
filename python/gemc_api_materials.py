@@ -27,7 +27,10 @@
 #					- efficiency is only used for a dielectric-metal optical boundary where there is no refraction
 #					- At this boundary the photon is either reflected or absorbed by the metal with this efficiency
 #					- This parameter can be used to define a quantum efficiency for a PMT, for example
-#
+#       mie                     - Sets Mie scattering length evaluated at the energies in photonEnergy
+#       mieforward              - Constant, describing angular distribution of forward Mie scattering
+#       miebackward             - Constant, describing angular distribution of backward Mie scattering
+#       mieratio                - Constant, describing ratio of forward to backward Mie scattering (1 - all forward, based on g4 user guide)
 #	*****  The next values are about defining scintillators.  They can be ignored (left to default values) if not using a scintillator
 #	***** Scintillators are assumed to have a fast and slow response component, defined by relative spectra
 #
@@ -55,7 +58,8 @@ class MyMaterial():
 	def __init__(self, name="none", description="none", density="none", ncomponents="none", components="none",
 	photonEnergy="none", indexOfRefraction="none", absorptionLength="none", reflectivity="none", efficiency="none",
 	fastcomponent="none", slowcomponent="none", scintillationyield="-1", resolutionscale="-1", 
-	fasttimeconstant="-1", slowtimeconstant="-1", yieldratio="-1", rayleigh="none"):
+        fasttimeconstant="-1", slowtimeconstant="-1", yieldratio="-1", rayleigh="none", 
+        mie="none", mieforward="-1", miebackward="-1", mieratio="-1"):
 
 		self.name = name
 		self.description = description
@@ -75,6 +79,10 @@ class MyMaterial():
 		self.slowtimeconstant = slowtimeconstant
 		self.yieldratio = yieldratio
 		self.rayleigh = rayleigh
+                self.mie = mie
+                self.mieforward = mieforward
+                self.miebackward = miebackward
+                self.mieratio = mieratio
 
 # Function to initialize (overwrite) any existing material file so that any new materials can simply be appended in this project	
 def init_materials_file(configuration):
@@ -110,6 +118,10 @@ def print_mat(configuration, material):
 			lstr += "%5s  |" % str(material.slowtimeconstant)
 			lstr += "%5s  |" % str(material.yieldratio)
 			# other optical processes
-			lstr += "%5s  \n" % str(material.rayleigh)
+			lstr += "%5s  |" % str(material.rayleigh)
+			lstr += "%5s  |" % str(material.mie)
+			lstr += "%5s  |" % str(material.mieforward)
+			lstr += "%5s  |" % str(material.miebackward)
+                        lstr += "%5s  \n" % str(material.mieratio)
 
 			fn.write(lstr)
