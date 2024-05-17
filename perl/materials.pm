@@ -39,6 +39,12 @@ sub init_mat {
     $mat{"rayleigh"} = "none";
     $mat{"birkConstant"} = "-1";
 
+    # mie scattering
+    $mat{"mie"} = "none";
+    $mat{"mieforward"} = "-1";
+    $mat{"miebackward"} = "-1";
+    $mat{"mieratio"} = "-1";
+    
     return %mat;
 }
 
@@ -76,6 +82,12 @@ sub print_mat {
     my $lyieldratio = trim($mats{"yieldratio"});
     my $lrayleigh = trim($mats{"rayleigh"});
     my $lbirkConstant = trim($mats{"birkConstant"});
+
+    # mie scattering
+    my $lmie = trim($mats{"mie"});
+    my $lmieforward = trim($mats{"mieforward"});
+    my $lmiebackward = trim($mats{"miebackward"});
+    my $lmieratio = trim($mats{"mieratio"});
 
     # after perl 5.10 once can use "state" to use a static variable`
 	state $counter_text = 0;
@@ -119,7 +131,11 @@ sub print_mat {
             printf INFO ("%5s  |", $lslowtimeconstant);
             printf INFO ("%5s  |", $lyieldratio);
             printf INFO ("%5s  |", $lrayleigh);
-            printf INFO ("%5s  \n", $lbirkConstant);
+            printf INFO ("%5s  |", $lbirkConstant);
+            printf INFO ("%5s  |", $lmie);
+            printf INFO ("%5s  |", $lmieforward);
+            printf INFO ("%5s  |", $lmiebackward);
+            printf INFO ("%5s  \n", $lmieratio);
 
         }
         else {
@@ -166,7 +182,17 @@ sub print_mat {
             else {printf INFO ("%s  |", $lrayleigh);}
             # Birk constant
             if ($lbirkConstant eq "-1") {printf INFO ("%5s\n", $lbirkConstant);}
-            else {printf INFO ("%s \n", $lbirkConstant);}
+            else {printf INFO ("%s  |", $lbirkConstant);}
+            # Mie scattering
+            if ($lmie eq "none") {printf INFO ("%5s |", $lmie);}
+            else {printf INFO ("%s  |", $lmie);}
+            if ($lmieforward eq "-1") {printf INFO ("%5s\n", $lmieforward);}
+            else {printf INFO ("%s  |", $lmieforward);}
+            if ($lmiebackward eq "-1") {printf INFO ("%5s\n", $lmiebackward);}
+            else {printf INFO ("%s  |", $lmiebackward);}
+            if ($lmieratio eq "-1") {printf INFO ("%5s\n", $lmieratio);}
+            else {printf INFO ("%s \n", $lmieratio);}
+
         }
 
         close(INFO);
@@ -192,7 +218,7 @@ sub print_mat {
             $counter_sqlite = 1;
         }
 
-        my $mnames_string = "system, variation, run, name, description, density, ncomponents, components, photonEnergy, indexOfRefraction, absorptionLength, reflectivity, efficiency, fastcomponent, slowcomponent, scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio, rayleigh, birkConstant ";
+        my $mnames_string = "system, variation, run, name, description, density, ncomponents, components, photonEnergy, indexOfRefraction, absorptionLength, reflectivity, efficiency, fastcomponent, slowcomponent, scintillationyield, resolutionscale, fasttimeconstant, slowtimeconstant, yieldratio, rayleigh, birkConstant, mie, mieforward, miebackward, mieratio ";
 
         # for each name in $mnames_string, we need to add a ? to the values string
         my $qvalues_string = "";
@@ -206,7 +232,7 @@ sub print_mat {
         my $sql = "INSERT INTO materials ($mnames_string) VALUES ($qvalues_string)";
 
         my $sth = $dbh->prepare($sql);
-        $sth->execute($system, $varia, $runno, $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant)
+        $sth->execute($system, $varia, $runno, $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant, $lmie, $lmieforward, $lmiebackward, $lmieratio)
         	or die "SQL Error: $DBI::errstr\n";
 
     }
