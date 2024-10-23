@@ -70,6 +70,10 @@ class GMaterial:
 		self.yieldratio = MANDATORY
 		self.rayleigh = MANDATORY
 		self.birkConstant = MANDATORY
+		self.mie = MANDATORY
+		self.mieforward = MANDATORY
+		self.miebackward = MANDATORY
+		self.mieratio = MANDATORY
 
 class GBank:
 	def __init__( self ):
