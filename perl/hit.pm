@@ -61,20 +61,20 @@ sub print_hit
 			$this_variation = $varia;
 		}
 		
-		open(INFO, ">>$file");
-		printf INFO ("%20s  |", $lname);
-		printf INFO ("%30s  |", $ldescription);
-		printf INFO ("%40s  |", $lidentifiers);
-		printf INFO ("%8s   |", $lSignalThreshold);
-		printf INFO ("%8s   |", $lTimeWindow);
-		printf INFO ("%8s   |", $lProdThreshold);
-		printf INFO ("%8s   |", $lMaxStep);
-		printf INFO ("%8s   |", $lriseTime);
-		printf INFO ("%8s   |", $lfallTime);
-		printf INFO ("%8s   |", $lmvToMeV);
-		printf INFO ("%8s   |", $lpedestal);
-		printf INFO ("%8s  \n", $ldelay);
-		close(INFO);
+		open(my $info, ">>$file");
+		printf $info ("%20s  |", $lname);
+		printf $info ("%30s  |", $ldescription);
+		printf $info ("%40s  |", $lidentifiers);
+		printf $info ("%8s   |", $lSignalThreshold);
+		printf $info ("%8s   |", $lTimeWindow);
+		printf $info ("%8s   |", $lProdThreshold);
+		printf $info ("%8s   |", $lMaxStep);
+		printf $info ("%8s   |", $lriseTime);
+		printf $info ("%8s   |", $lfallTime);
+		printf $info ("%8s   |", $lmvToMeV);
+		printf $info ("%8s   |", $lpedestal);
+		printf $info ("%8s  \n", $ldelay);
+		close($info);
 	}
 	
 	# MYSQL Factory

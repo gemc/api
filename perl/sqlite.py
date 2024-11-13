@@ -98,6 +98,18 @@ class GHit:
 		self.pedestal = MANDATORY
 		self.delay = MANDATORY
 
+class GParameters:
+	def __init__( self ):
+		self.name = NGIVEN
+		self.value = NGIVEN
+		self.vunit = NGIVEN
+		self.description = MANDATORY
+		self.authors = MANDATORY
+		self.emails = OPTIONAL
+		self.document = OPTIONAL
+		self.var_name = OPTIONAL
+		self.doc_author = OPTIONAL
+		self.doc_date = OPTIONAL
 
 def main():
 	# Provides the -h, --help message
@@ -143,10 +155,11 @@ def main():
 		sqlitedb = sqlite3.connect( sqlitedb_file )
 		create_sqlite_database( sqlitedb )
 
-		add_geometry_fields_to_sqlite_if_needed(  GVolume(),   sqlitedb )
-		add_materials_fields_to_sqlite_if_needed( GMaterial(), sqlitedb )
-		add_bank_fields_to_sqlite_if_needed(      GBank(),     sqlitedb )
-		add_hit_fields_to_sqlite_if_needed(       GHit(),      sqlitedb )
+		add_geometry_fields_to_sqlite_if_needed(  GVolume(),     sqlitedb )
+		add_materials_fields_to_sqlite_if_needed( GMaterial(),   sqlitedb )
+		add_bank_fields_to_sqlite_if_needed(      GBank(),       sqlitedb )
+		add_hit_fields_to_sqlite_if_needed(       GHit(),        sqlitedb )
+		add_pars_fields_to_sqlite_if_needed(      GParameters(), sqlitedb )
 
 
 	if args.l != NGIVEN:
@@ -222,6 +235,9 @@ def create_sqlite_database( sqlitedb ):
 	# Create materials table with one column
 	sql.execute( '''CREATE TABLE hits (id integer primary key)''' )
 
+	# Create materials table with one column
+	sql.execute( '''CREATE TABLE parameters (id integer primary key)''' )
+
 	# Save (commit) the changes
 	sqlitedb.commit()
 
@@ -296,6 +312,23 @@ def add_hit_fields_to_sqlite_if_needed( ghit, sqlitedb ):
 			add_column( sqlitedb, "hits", field, sql_type )
 	sqlitedb.commit()
 
+def add_pars_fields_to_sqlite_if_needed( gparameters, sqlitedb ):
+	# check if the pars table has any columns
+	sql = sqlitedb.cursor()
+	sql.execute( "SELECT name FROM PRAGMA_TABLE_INFO('parameters');" )
+	fields = sql.fetchall()
+
+	# if there is only one column, add the columns
+	if len( fields ) == 1:
+		add_column( sqlitedb, "parameters", "system", "TEXT" )
+		add_column( sqlitedb, "parameters", "variation", "TEXT" )
+		add_column( sqlitedb, "parameters", "run", "INTEGER" )
+
+		# add columns from gparameters class
+		for field in gparameters.__dict__:
+			sql_type = sqltype_of_variable( gparameters.__dict__[ field ] )
+			add_column( sqlitedb, "parameters", field, sql_type )
+	sqlitedb.commit()
 
 def sqltype_of_variable( variable ) -> str:
 	if type( variable ) is int:

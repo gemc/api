@@ -10,52 +10,50 @@ use 5.010;
 
 
 # Print bank to TEXT file or upload it onto the DB
-sub insert_bank_variable
-{
-	
-	if (@_ != 6){
-		print " ERROR: To define a bank variable 4 arguments should be passed to <insert_bank_variable> \n";
-	}
-	
-	my %configuration = %{+shift};
-	
-	my $varia = $configuration{"variation"};
-	my $runno = $configuration{"run_number"};
+sub insert_bank_variable {
 
-	my $bname        = shift;  # bank name
-	my $lname        = shift;  # variable name
-	my $lnum         = shift;  # variable int (unique id)
-	my $ltype        = shift;  # variable type
-	my $ldescription = shift;  # description
-	
+    if (@_ != 6) {
+        print " ERROR: To define a bank variable 6 arguments should be passed to <insert_bank_variable> \n";
+    }
+
+    my %configuration = %{+shift};
+
+    my $varia = $configuration{"variation"};
+    my $runno = $configuration{"run_number"};
+
+    my $bname = shift;        # bank name
+    my $lname = shift;        # variable name
+    my $lnum = shift;         # variable int (unique id)
+    my $ltype = shift;        # variable type
+    my $ldescription = shift; # description
+
     # after perl 5.10 once can use "state" to use a static variable`
-	state $counter_text = 0;
-	state $counter_mysql = 0;
-	state $counter_sqlite = 0;
+    state $counter_text = 0;
+    state $counter_mysql = 0;
+    state $counter_sqlite = 0;
 
 
-	# TEXT Factory
-	if($configuration{"factory"} eq "TEXT") {
-		my $file = $configuration{"detector_name"}."__bank.txt";
-		if($counter_text == 0) {
-			`rm -f $file`;
-			print "Overwriting if existing: ",  $file, "\n";
-			$counter_text = 1;
-		}
-		
-		open(INFO, ">>$file");
-		printf INFO ("%20s  |",  $bname);
-		printf INFO ("%20s  |",  $lname);
-		printf INFO ("%50s  |",  $ldescription);
-		printf INFO ("%5s   |",  $lnum);
-		printf INFO ("%20s  \n", $ltype);
-		close(INFO);
-	}
-	
-	# MYSQL Factory
-	if($configuration{"factory"} eq "MYSQL") {
+    # TEXT Factory
+    if ($configuration{"factory"} eq "TEXT") {
+        my $file = $configuration{"detector_name"} . "__bank.txt";
+        if ($counter_text == 0) {
+            `rm -f $file`;
+            print "Overwriting if existing: ", $file, "\n";
+            $counter_text = 1;
+        }
 
-	}
+        open(my $info, ">>", $file) or die "Could not open file '$file': $!";
+        printf $info("%20s  |", $bname);
+        printf $info("%20s  |", $lname);
+        printf $info("%50s  |", $ldescription);
+        printf $info("%5s   |", $lnum);
+        printf $info("%20s  \n", $ltype);
+        close($info);
+    }
+
+    # MYSQL Factory
+    if ($configuration{"factory"} eq "MYSQL") {
+    }
 
     # SQLITE Factory
     if ($configuration{"factory"} eq "SQLITE") {
@@ -67,7 +65,7 @@ sub insert_bank_variable
             my $sql = "DELETE FROM banks WHERE system = ?";
             my $sth = $dbh->prepare($sql);
             $sth->execute($system);
-            print "   > Deleted all materials for system $system \n";
+            print "   > Deleted all banks for system $system \n";
             $counter_sqlite = 1;
         }
 
@@ -87,16 +85,14 @@ sub insert_bank_variable
 
         my $sth = $dbh->prepare($sql);
         $sth->execute($system, $bname, $lname, $ldescription, $lnum, $ltype)
-			or die "Can't execute insert statement: $DBI::errstr";
-	}
+            or die "Can't execute insert statement: $DBI::errstr";
+    }
 
-	if($configuration{"verbosity"} > 0) {
-		print "  + variable $lname uploaded successfully for variation \"$varia\" \n";
-	}
-	
-	
+    if ($configuration{"verbosity"} > 0) {
+        print "  + variable $lname uploaded successfully for variation \"$varia\" \n";
+    }
+
 }
-
 
 1;
 

@@ -29,28 +29,28 @@ sub add{
 sub print {
 	my $self = shift;
 
-	open(INFO, ">$self->{_dirName}/cad.gxml");
-	printf INFO ("<gxml>\n");
+	open(my $info, ">$self->{_dirName}/cad.gxml");
+	printf $info ("<gxml>\n");
 	foreach my $det (@{$self->{_volumes}}){
-		printf INFO ("\t<volume name=\"%s\"", $det->{"name"});
-		printf INFO (" color=\"%s\"", $det->{"color"});
-		printf INFO (" material=\"%s\"", $det->{"material"});
-		printf INFO (" position=\"%s\"", $det->{"pos"});
-		printf INFO (" rotation=\"%s\"", $det->{"rotation"});
+		printf $info ("\t<volume name=\"%s\"", $det->{"name"});
+		printf $info (" color=\"%s\"", $det->{"color"});
+		printf $info (" material=\"%s\"", $det->{"material"});
+		printf $info (" position=\"%s\"", $det->{"pos"});
+		printf $info (" rotation=\"%s\"", $det->{"rotation"});
 		if($det->{"mother"} ne ""){
-			printf INFO (" mother=\"%s\"", $det->{"mother"});
+			printf $info (" mother=\"%s\"", $det->{"mother"});
 		}
 		if($det->{"sensitivity"} ne "no"){
-			printf INFO (" sensitivity=\"%s\"", $det->{"sensitivity"});
+			printf $info (" sensitivity=\"%s\"", $det->{"sensitivity"});
 			if($det->{"hitType"} ne "no"){
-				printf INFO (" hitType=\"%s\"", $det->{"hitType"});
+				printf $info (" hitType=\"%s\"", $det->{"hitType"});
 			}
-			printf INFO (" identifiers=\"%s\"", $det->{"identifiers"});
+			printf $info (" identifiers=\"%s\"", $det->{"identifiers"});
 		}
-		printf INFO (" />\n");
+		printf $info (" />\n");
 	}
-	printf INFO ("</gxml>\n");
-	close(INFO);
+	printf $info ("</gxml>\n");
+	close($info);
 }
 
 

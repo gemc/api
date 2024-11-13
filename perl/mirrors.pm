@@ -165,9 +165,9 @@ sub print_mir
 			$this_variation = $varia;
 		}
 		
-		open(INFO, ">>$file");
-		printf INFO ("%20s  |",  $lname);
-		printf INFO ("%30s  |",  $ldesc);
+		open(my $info, ">>$file");
+		printf $info ("%20s  |",  $lname);
+		printf $info ("%30s  |",  $ldesc);
 		
 		if($ltype    eq "mustBeDefined") { print "Error: type undefined.\n"; }
 		if($lfinish  eq "mustBeDefined") { print "Error: finish undefined.\n"; }
@@ -175,40 +175,40 @@ sub print_mir
 		if($lborder  eq "mustBeDefined") { print "Error: border undefined.\n"; }
 
 		
-		printf INFO ("%24s  |", $ltype);
-		printf INFO ("%20s  |", $lfinish);
-		printf INFO ("%10s  |", $lmodel);
-		printf INFO ("%25s  |", $lborder);
-		printf INFO ("%25s  |", $lmatOptProps);
+		printf $info ("%24s  |", $ltype);
+		printf $info ("%20s  |", $lfinish);
+		printf $info ("%10s  |", $lmodel);
+		printf $info ("%25s  |", $lborder);
+		printf $info ("%25s  |", $lmatOptProps);
 				
 			
 		# photon energy
-		if($lphotonEnergy eq "none")     {printf INFO ("%5s |", $lphotonEnergy);}
-		else                             {printf INFO ("%s  |", $lphotonEnergy);}
+		if($lphotonEnergy eq "none")     {printf $info ("%5s |", $lphotonEnergy);}
+		else                             {printf $info ("%s  |", $lphotonEnergy);}
 		# index of refraction
-		if($lindexOfRefraction eq "none"){printf INFO ("%5s |", $lindexOfRefraction);}
-		else                             {printf INFO ("%s  |", $lindexOfRefraction);}
+		if($lindexOfRefraction eq "none"){printf $info ("%5s |", $lindexOfRefraction);}
+		else                             {printf $info ("%s  |", $lindexOfRefraction);}
 		# reflectivity
-		if($lreflectivity eq "none")     {printf INFO ("%5s |", $lreflectivity);}
-		else                             {printf INFO ("%s  |", $lreflectivity);}
+		if($lreflectivity eq "none")     {printf $info ("%5s |", $lreflectivity);}
+		else                             {printf $info ("%s  |", $lreflectivity);}
 		# efficiency
-		if($lefficiency eq "none")       {printf INFO ("%5s |", $lefficiency);}
-		else                             {printf INFO ("%s  |", $lefficiency);}
+		if($lefficiency eq "none")       {printf $info ("%5s |", $lefficiency);}
+		else                             {printf $info ("%s  |", $lefficiency);}
 		# specularlobe
-		if($lspecularlobe eq "none")     {printf INFO ("%5s |", $lspecularlobe);}
-		else                             {printf INFO ("%s  |", $lspecularlobe);}
+		if($lspecularlobe eq "none")     {printf $info ("%5s |", $lspecularlobe);}
+		else                             {printf $info ("%s  |", $lspecularlobe);}
 		# specularspike
-		if($lspecularspike eq "none")    {printf INFO ("%5s |", $lspecularspike);}
-		else                             {printf INFO ("%s  |", $lspecularspike);}
+		if($lspecularspike eq "none")    {printf $info ("%5s |", $lspecularspike);}
+		else                             {printf $info ("%s  |", $lspecularspike);}
 		# backscatter
-		if($lbackscatter eq "none")      {printf INFO ("%5s |", $lbackscatter);}
-		else                             {printf INFO ("%s  |", $lbackscatter);}
+		if($lbackscatter eq "none")      {printf $info ("%5s |", $lbackscatter);}
+		else                             {printf $info ("%s  |", $lbackscatter);}
 		# sigmaAlhpa
-		if($lsigmaAlhpa eq "-1")         {printf INFO ("%5s\n", $lsigmaAlhpa);}
-		else                             {printf INFO ("%s \n", $lsigmaAlhpa);}
+		if($lsigmaAlhpa eq "-1")         {printf $info ("%5s\n", $lsigmaAlhpa);}
+		else                             {printf $info ("%s \n", $lsigmaAlhpa);}
 
 		
-		close(INFO);
+		close($info);
 	}
 	
 	# MYSQL Factory

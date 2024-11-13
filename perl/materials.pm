@@ -44,7 +44,7 @@ sub init_mat {
     $mat{"mieforward"} = "-1";
     $mat{"miebackward"} = "-1";
     $mat{"mieratio"} = "-1";
-    
+
     return %mat;
 }
 
@@ -54,8 +54,8 @@ sub print_mat {
     my %configuration = %{+shift};
     my %mats = %{+shift};
 
-	my $varia = $configuration{"variation"};
-	my $runno = $configuration{"run_number"};
+    my $varia = $configuration{"variation"};
+    my $runno = $configuration{"run_number"};
 
     # converting the hash maps in local variables
     # (this is necessary to parse the MYSQL command)
@@ -90,9 +90,9 @@ sub print_mat {
     my $lmieratio = trim($mats{"mieratio"});
 
     # after perl 5.10 once can use "state" to use a static variable`
-	state $counter_text = 0;
-	state $counter_mysql = 0;
-	state $counter_sqlite = 0;
+    state $counter_text = 0;
+    state $counter_mysql = 0;
+    state $counter_sqlite = 0;
 
     state $this_variation = "";
 
@@ -107,91 +107,91 @@ sub print_mat {
             $this_variation = $varia;
         }
 
-        open(INFO, ">>$file");
+        open(my $info, ">>$file");
         # notice INFO( will not work, there has to be a space after INFO
-        printf INFO ("%20s  |", $lname);
-        printf INFO ("%30s  |", $ldesc);
-        printf INFO ("%10s  |", $ldensity);
-        printf INFO ("%10s  |", $lncomponents);
-        printf INFO ("%50s  |", $lcomponents);
+        printf $info("%20s  |", $lname);
+        printf $info("%30s  |", $ldesc);
+        printf $info("%10s  |", $ldensity);
+        printf $info("%10s  |", $lncomponents);
+        printf $info("%50s  |", $lcomponents);
 
         if ($lphotonEnergy eq "none") {
-            printf INFO ("%5s  |", $lphotonEnergy);
-            printf INFO ("%5s  |", $lindexOfRefraction);
-            printf INFO ("%5s  |", $labsorptionLength);
-            printf INFO ("%5s  |", $lreflectivity);
-            printf INFO ("%5s  |", $lefficiency);
+            printf $info("%5s  |", $lphotonEnergy);
+            printf $info("%5s  |", $lindexOfRefraction);
+            printf $info("%5s  |", $labsorptionLength);
+            printf $info("%5s  |", $lreflectivity);
+            printf $info("%5s  |", $lefficiency);
 
             # scintillation
-            printf INFO ("%5s  |", $lfastcomponent);
-            printf INFO ("%5s  |", $lslowcomponent);
-            printf INFO ("%5s  |", $lscintillationyield);
-            printf INFO ("%5s  |", $lresolutionscale);
-            printf INFO ("%5s  |", $lfasttimeconstant);
-            printf INFO ("%5s  |", $lslowtimeconstant);
-            printf INFO ("%5s  |", $lyieldratio);
-            printf INFO ("%5s  |", $lrayleigh);
-            printf INFO ("%5s  |", $lbirkConstant);
-            printf INFO ("%5s  |", $lmie);
-            printf INFO ("%5s  |", $lmieforward);
-            printf INFO ("%5s  |", $lmiebackward);
-            printf INFO ("%5s  \n", $lmieratio);
+            printf $info("%5s  |", $lfastcomponent);
+            printf $info("%5s  |", $lslowcomponent);
+            printf $info("%5s  |", $lscintillationyield);
+            printf $info("%5s  |", $lresolutionscale);
+            printf $info("%5s  |", $lfasttimeconstant);
+            printf $info("%5s  |", $lslowtimeconstant);
+            printf $info("%5s  |", $lyieldratio);
+            printf $info("%5s  |", $lrayleigh);
+            printf $info("%5s  |", $lbirkConstant);
+            printf $info("%5s  |", $lmie);
+            printf $info("%5s  |", $lmieforward);
+            printf $info("%5s  |", $lmiebackward);
+            printf $info("%5s  \n", $lmieratio);
 
         }
         else {
-            printf INFO ("%s  |", $lphotonEnergy);
+            printf $info("%s  |", $lphotonEnergy);
 
             # index of refraction
-            if ($lindexOfRefraction eq "none") {printf INFO ("%5s |", $lindexOfRefraction);}
-            else {printf INFO ("%s  |", $lindexOfRefraction);}
+            if ($lindexOfRefraction eq "none") {printf $info("%5s |", $lindexOfRefraction);}
+            else {printf $info("%s  |", $lindexOfRefraction);}
             # absorption length
-            if ($labsorptionLength eq "none") {printf INFO ("%5s |", $labsorptionLength);}
-            else {printf INFO ("%s  |", $labsorptionLength);}
+            if ($labsorptionLength eq "none") {printf $info("%5s |", $labsorptionLength);}
+            else {printf $info("%s  |", $labsorptionLength);}
             # reflectivity
-            if ($lreflectivity eq "none") {printf INFO ("%5s |", $lreflectivity);}
-            else {printf INFO ("%s  |", $lreflectivity);}
+            if ($lreflectivity eq "none") {printf $info("%5s |", $lreflectivity);}
+            else {printf $info("%s  |", $lreflectivity);}
             # efficiency
-            if ($lefficiency eq "none") {printf INFO ("%5s |", $lefficiency);}
-            else {printf INFO ("%s  |", $lefficiency);}
+            if ($lefficiency eq "none") {printf $info("%5s |", $lefficiency);}
+            else {printf $info("%s  |", $lefficiency);}
 
             # scintillation
 
             # fast component (as function of wavelength)
-            if ($lfastcomponent eq "none") {printf INFO ("%5s |", $lfastcomponent);}
-            else {printf INFO ("%s  |", $lfastcomponent);}
+            if ($lfastcomponent eq "none") {printf $info("%5s |", $lfastcomponent);}
+            else {printf $info("%s  |", $lfastcomponent);}
             # slow component (as function of wavelength)
-            if ($lslowcomponent eq "none") {printf INFO ("%5s |", $lslowcomponent);}
-            else {printf INFO ("%s  |", $lslowcomponent);}
+            if ($lslowcomponent eq "none") {printf $info("%5s |", $lslowcomponent);}
+            else {printf $info("%s  |", $lslowcomponent);}
             # scintillation yield (constant)
-            if ($lscintillationyield eq "-1") {printf INFO ("%5s |", $lscintillationyield);}
-            else {printf INFO ("%s  |", $lscintillationyield);}
+            if ($lscintillationyield eq "-1") {printf $info("%5s |", $lscintillationyield);}
+            else {printf $info("%s  |", $lscintillationyield);}
             # resolution scale (constant)
-            if ($lresolutionscale eq "-1") {printf INFO ("%5s |", $lresolutionscale);}
-            else {printf INFO ("%s  |", $lresolutionscale);}
+            if ($lresolutionscale eq "-1") {printf $info("%5s |", $lresolutionscale);}
+            else {printf $info("%s  |", $lresolutionscale);}
             # fast time (constant)
-            if ($lfasttimeconstant eq "-1") {printf INFO ("%5s |", $lfasttimeconstant);}
-            else {printf INFO ("%s  |", $lfasttimeconstant);}
+            if ($lfasttimeconstant eq "-1") {printf $info("%5s |", $lfasttimeconstant);}
+            else {printf INFO("%s  |", $lfasttimeconstant);}
             # slow time (constant)
-            if ($lslowtimeconstant eq "-1") {printf INFO ("%5s |", $lslowtimeconstant);}
-            else {printf INFO ("%s  |", $lslowtimeconstant);}
+            if ($lslowtimeconstant eq "-1") {printf INFO("%5s |", $lslowtimeconstant);}
+            else {printf INFO("%s  |", $lslowtimeconstant);}
             # ratio of yield to total yield for slow component (constant)
-            if ($lyieldratio eq "-1") {printf INFO ("%5s |", $lyieldratio);}
-            else {printf INFO ("%s  |", $lyieldratio);}
+            if ($lyieldratio eq "-1") {printf INFO("%5s |", $lyieldratio);}
+            else {printf INFO("%s  |", $lyieldratio);}
             # rayleigh scattering
-            if ($lrayleigh eq "none") {printf INFO ("%5s |", $lrayleigh);}
-            else {printf INFO ("%s  |", $lrayleigh);}
+            if ($lrayleigh eq "none") {printf INFO("%5s |", $lrayleigh);}
+            else {printf INFO("%s  |", $lrayleigh);}
             # Birk constant
-            if ($lbirkConstant eq "-1") {printf INFO ("%5s |", $lbirkConstant);}
-            else {printf INFO ("%s  |", $lbirkConstant);}
+            if ($lbirkConstant eq "-1") {printf INFO("%5s |", $lbirkConstant);}
+            else {printf INFO("%s  |", $lbirkConstant);}
             # Mie scattering
-            if ($lmie eq "none") {printf INFO ("%5s |", $lmie);}
-            else {printf INFO ("%s  |", $lmie);}
-            if ($lmieforward eq "-1") {printf INFO ("%5s |", $lmieforward);}
-            else {printf INFO ("%s  |", $lmieforward);}
-            if ($lmiebackward eq "-1") {printf INFO ("%5s |", $lmiebackward);}
-            else {printf INFO ("%s  |", $lmiebackward);}
-            if ($lmieratio eq "-1") {printf INFO ("%5s\n", $lmieratio);}
-            else {printf INFO ("%s \n", $lmieratio);}
+            if ($lmie eq "none") {printf INFO("%5s |", $lmie);}
+            else {printf INFO("%s  |", $lmie);}
+            if ($lmieforward eq "-1") {printf INFO("%5s |", $lmieforward);}
+            else {printf INFO("%s  |", $lmieforward);}
+            if ($lmiebackward eq "-1") {printf INFO("%5s |", $lmiebackward);}
+            else {printf INFO("%s  |", $lmiebackward);}
+            if ($lmieratio eq "-1") {printf INFO("%5s\n", $lmieratio);}
+            else {printf INFO("%s \n", $lmieratio);}
 
         }
 
@@ -233,7 +233,7 @@ sub print_mat {
 
         my $sth = $dbh->prepare($sql);
         $sth->execute($system, $varia, $runno, $lname, $ldesc, $ldensity, $lncomponents, $lcomponents, $lphotonEnergy, $lindexOfRefraction, $labsorptionLength, $lreflectivity, $lefficiency, $lfastcomponent, $lslowcomponent, $lscintillationyield, $lresolutionscale, $lfasttimeconstant, $lslowtimeconstant, $lyieldratio, $lrayleigh, $lbirkConstant, $lmie, $lmieforward, $lmiebackward, $lmieratio)
-        	or die "SQL Error: $DBI::errstr\n";
+            or die "SQL Error: $DBI::errstr\n";
 
     }
 
