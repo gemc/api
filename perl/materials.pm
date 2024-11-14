@@ -108,7 +108,6 @@ sub print_mat {
         }
 
         open(my $info, ">>$file");
-        # notice INFO( will not work, there has to be a space after INFO
         printf $info("%20s  |", $lname);
         printf $info("%30s  |", $ldesc);
         printf $info("%10s  |", $ldensity);
@@ -170,32 +169,32 @@ sub print_mat {
             else {printf $info("%s  |", $lresolutionscale);}
             # fast time (constant)
             if ($lfasttimeconstant eq "-1") {printf $info("%5s |", $lfasttimeconstant);}
-            else {printf INFO("%s  |", $lfasttimeconstant);}
+            else {printf $info("%s  |", $lfasttimeconstant);}
             # slow time (constant)
-            if ($lslowtimeconstant eq "-1") {printf INFO("%5s |", $lslowtimeconstant);}
-            else {printf INFO("%s  |", $lslowtimeconstant);}
+            if ($lslowtimeconstant eq "-1") {printf $info("%5s |", $lslowtimeconstant);}
+            else {printf $info("%s  |", $lslowtimeconstant);}
             # ratio of yield to total yield for slow component (constant)
-            if ($lyieldratio eq "-1") {printf INFO("%5s |", $lyieldratio);}
-            else {printf INFO("%s  |", $lyieldratio);}
+            if ($lyieldratio eq "-1") {printf $info("%5s |", $lyieldratio);}
+            else {printf $info("%s  |", $lyieldratio);}
             # rayleigh scattering
-            if ($lrayleigh eq "none") {printf INFO("%5s |", $lrayleigh);}
-            else {printf INFO("%s  |", $lrayleigh);}
+            if ($lrayleigh eq "none") {printf $info("%5s |", $lrayleigh);}
+            else {printf $info("%s  |", $lrayleigh);}
             # Birk constant
-            if ($lbirkConstant eq "-1") {printf INFO("%5s |", $lbirkConstant);}
-            else {printf INFO("%s  |", $lbirkConstant);}
+            if ($lbirkConstant eq "-1") {printf $info("%5s |", $lbirkConstant);}
+            else {printf $info("%s  |", $lbirkConstant);}
             # Mie scattering
-            if ($lmie eq "none") {printf INFO("%5s |", $lmie);}
-            else {printf INFO("%s  |", $lmie);}
-            if ($lmieforward eq "-1") {printf INFO("%5s |", $lmieforward);}
-            else {printf INFO("%s  |", $lmieforward);}
-            if ($lmiebackward eq "-1") {printf INFO("%5s |", $lmiebackward);}
-            else {printf INFO("%s  |", $lmiebackward);}
-            if ($lmieratio eq "-1") {printf INFO("%5s\n", $lmieratio);}
-            else {printf INFO("%s \n", $lmieratio);}
+            if ($lmie eq "none") {printf $info("%5s |", $lmie);}
+            else {printf $info("%s  |", $lmie);}
+            if ($lmieforward eq "-1") {printf $info("%5s |", $lmieforward);}
+            else {printf $info("%s  |", $lmieforward);}
+            if ($lmiebackward eq "-1") {printf $info("%5s |", $lmiebackward);}
+            else {printf $info("%s  |", $lmiebackward);}
+            if ($lmieratio eq "-1") {printf $info("%5s\n", $lmieratio);}
+            else {printf $info("%s \n", $lmieratio);}
 
         }
 
-        close(INFO);
+        close($info);
     }
 
     # MYSQL Factory
