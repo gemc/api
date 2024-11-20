@@ -139,7 +139,10 @@ sub print_det {
         my $sth = $dbh->prepare($sql);
         $sth->execute($system, $varia, $runno, $lname, $lmother, $ldescription, $lpos, $lrotation, $lcolor, $ltype, $ldimensions, $lmaterial, $lmfield, $lncopy, $lpMany, $lexist, $lvisible, $lstyle, $lsensitivity, $lhit_type, $lidentifiers)
             or die "Can't execute insert statement: $DBI::errstr";
+    }
 
+    if ($configuration{"verbosity"} > 0) {
+        print "  + CAD $lname uploaded successfully for variation \"$varia\" and Run $runno \n";
     }
 }
 

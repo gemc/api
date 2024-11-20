@@ -111,6 +111,21 @@ class GParameters:
 		self.doc_author = OPTIONAL
 		self.doc_date = OPTIONAL
 
+class GCAD:
+	def __init__( self ):
+		self.name = NGIVEN
+		self.sensitivity = OPTIONAL
+		self.hit_type = OPTIONAL
+		self.identifiers = OPTIONAL
+		self.visible = 1
+		self.style = 1
+		self.position = '0*mm, 0*mm, 0*mm'
+		self.rotation = '0*deg, 0*deg, 0*deg'
+		self.mfield = OPTIONAL
+		self.mother = DEFAULTMOTHER
+		self.material = MANDATORY
+		self.color = DEFAULTCOLOR
+
 def main():
 	# Provides the -h, --help message
 	desc_str = "   SCI-G sql interface\n"
@@ -160,6 +175,7 @@ def main():
 		add_bank_fields_to_sqlite_if_needed(      GBank(),       sqlitedb )
 		add_hit_fields_to_sqlite_if_needed(       GHit(),        sqlitedb )
 		add_pars_fields_to_sqlite_if_needed(      GParameters(), sqlitedb )
+		add_cad_fields_to_sqlite_if_needed(       GCAD(),        sqlitedb )
 
 
 	if args.l != NGIVEN:
@@ -229,14 +245,18 @@ def create_sqlite_database( sqlitedb ):
 	# Create materials table with one column
 	sql.execute( '''CREATE TABLE materials (id integer primary key)''' )
 
-	# Create materials table with one column
+	# Create banks table with one column
 	sql.execute( '''CREATE TABLE banks (id integer primary key)''' )
 
-	# Create materials table with one column
+	# Create hits table with one column
 	sql.execute( '''CREATE TABLE hits (id integer primary key)''' )
 
-	# Create materials table with one column
+	# Create parameters table with one column
 	sql.execute( '''CREATE TABLE parameters (id integer primary key)''' )
+
+	# Create cad table with one column
+	sql.execute( '''CREATE TABLE cad (id integer primary key)''' )
+
 
 	# Save (commit) the changes
 	sqlitedb.commit()
@@ -328,6 +348,24 @@ def add_pars_fields_to_sqlite_if_needed( gparameters, sqlitedb ):
 		for field in gparameters.__dict__:
 			sql_type = sqltype_of_variable( gparameters.__dict__[ field ] )
 			add_column( sqlitedb, "parameters", field, sql_type )
+	sqlitedb.commit()
+
+def add_cad_fields_to_sqlite_if_needed( gcad, sqlitedb ):
+	# check if the pars table has any columns
+	sql = sqlitedb.cursor()
+	sql.execute( "SELECT name FROM PRAGMA_TABLE_INFO('cad');" )
+	fields = sql.fetchall()
+
+	# if there is only one column, add the columns
+	if len( fields ) == 1:
+		add_column( sqlitedb, "cad", "system", "TEXT" )
+		add_column( sqlitedb, "cad", "variation", "TEXT" )
+		add_column( sqlitedb, "cad", "run", "INTEGER" )
+
+		# add columns from gcad class
+		for field in gcad.__dict__:
+			sql_type = sqltype_of_variable( gcad.__dict__[ field ] )
+			add_column( sqlitedb, "cad", field, sql_type )
 	sqlitedb.commit()
 
 def sqltype_of_variable( variable ) -> str:

@@ -93,7 +93,6 @@ sub print_mat {
     state $counter_text = 0;
     state $counter_mysql = 0;
     state $counter_sqlite = 0;
-
     state $this_variation = "";
 
     # TEXT Factory
