@@ -15,6 +15,7 @@ MANDATORY = 'notSetYet'  # for mandatory fields. Used in function check_validity
 OPTIONAL = 'na'  # for optionals fields
 DEFAULTMOTHER = 'root'
 DEFAULTCOLOR = '778899'
+DEFAULD_CADDIR = 'cad'
 
 
 # GVolume class definition
@@ -114,6 +115,7 @@ class GParameters:
 class GCAD:
 	def __init__( self ):
 		self.name = NGIVEN
+		self.cad_subdir = DEFAULD_CADDIR
 		self.sensitivity = OPTIONAL
 		self.hit_type = OPTIONAL
 		self.identifiers = OPTIONAL

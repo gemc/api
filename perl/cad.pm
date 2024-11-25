@@ -14,6 +14,7 @@ sub init_cad {
     my %cad = ();
 
     # default values
+    $cad{"cad_subdir"} = "cad";
     $cad{"sensitivity"} = "no";
     $cad{"hit_type"} = "no";
     $cad{"identifiers"} = "no";
@@ -40,6 +41,7 @@ sub print_cad {
     # (this is necessary to parse the MYSQL command)
 
     my $lname = trim($cad{"name"});
+    my $lcad_subdir = trim($cad{"cad_subdir"});
     my $lsensitivity = trim($cad{"sensitivity"});
     my $lhit_type = trim($cad{"hit_type"});
     my $lidentifiers = trim($cad{"identifiers"});
@@ -78,7 +80,7 @@ sub print_cad {
              $counter_sqlite = 1;
          }
 
-         my $mnames_string = "system, variation, run, name, sensitivity, hit_type, identifiers, visible, style, position, rotation, mfield, mother, material, color";
+         my $mnames_string = "system, variation, run, name, cad_subdir, sensitivity, hit_type, identifiers, visible, style, position, rotation, mfield, mother, material, color";
 
          # for each name in $mnames_string, we need to add a ? to the values string
          my $qvalues_string = "";
@@ -92,7 +94,7 @@ sub print_cad {
          my $sql = "INSERT INTO cad ($mnames_string) VALUES ($qvalues_string)";
 
          my $sth = $dbh->prepare($sql);
-         $sth->execute($system, $varia, $runno, $lname, $lsensitivity, $lhit_type, $lidentifiers, $lvisible, $lstyle, $lposition, $lrotation, $lmfield, $lmother, $lmaterial, $lcolor)
+         $sth->execute($system, $varia, $runno, $lname, $lcad_subdir, $lsensitivity, $lhit_type, $lidentifiers, $lvisible, $lstyle, $lposition, $lrotation, $lmfield, $lmother, $lmaterial, $lcolor)
              or die "SQL Error: $DBI::errstr\n";
     }
 
