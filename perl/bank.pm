@@ -31,16 +31,14 @@ sub insert_bank_variable {
     state $counter_text = 0;
     state $counter_mysql = 0;
     state $counter_sqlite = 0;
-    state $this_variation = "";
 
     # TEXT Factory
-    if ($configuration{"factory"} eq "TEXT" || $this_variation ne $varia) {
+    if ($configuration{"factory"} eq "TEXT" ) {
         my $file = $configuration{"detector_name"} . "__bank.txt";
         if ($counter_text == 0) {
             `rm -f $file`;
             print "Overwriting if existing: ", $file, "\n";
             $counter_text = 1;
-            $this_variation = $varia;
         }
 
         open(my $info, ">>", $file) or die "Could not open file '$file': $!";
@@ -61,13 +59,12 @@ sub insert_bank_variable {
         my $dbh = open_db(%configuration);
 
         # first time this module is run, delete everything in geometry table for this variation, system and run number
-        if ($counter_sqlite == 0 || $this_variation ne $varia ) {
+        if ($counter_sqlite == 0 ) {
             my $sql = "DELETE FROM banks WHERE system = ?";
             my $sth = $dbh->prepare($sql);
             $sth->execute($system);
             print "   > Deleted all banks for system $system \n";
             $counter_sqlite = 1;
-            $this_variation = $varia;
         }
 
         my $mnames_string = "system, bank_name, variable_name, description, int_id, type";
