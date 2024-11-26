@@ -34,7 +34,7 @@ sub print_cad {
     my %configuration = %{+shift};
     my %cad = %{+shift};
 
-    my $system = $configuration{"detector_name"};
+    my $system = $configuration{"detector_name"}."_cad";
     my $varia = $configuration{"variation"};
     my $runno = $configuration{"run_number"};
 
