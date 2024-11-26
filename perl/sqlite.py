@@ -21,7 +21,6 @@ DEFAULD_CADDIR = 'cad'
 # GVolume class definition
 # Matches the perl definitions of geometry.pm
 class GVolume:
-
 	def __init__( self ):
 		# mandatory fields. Checked at publish time
 		self.name = NGIVEN
@@ -49,7 +48,6 @@ class GVolume:
 		self.identity = OPTIONAL
 
 class GMaterial:
-
 	def __init__( self ):
 		# mandatory fields. Checked at publish time
 		self.name = NGIVEN
@@ -128,6 +126,24 @@ class GCAD:
 		self.material = MANDATORY
 		self.color = DEFAULTCOLOR
 
+class GMirror:
+	def __init__( self ):
+		self.name = NGIVEN
+		self.description = MANDATORY
+		self.type = MANDATORY
+		self.finish = MANDATORY
+		self.model = MANDATORY
+		self.border = OPTIONAL
+		self.mat_opt_props = OPTIONAL
+		self.photon_energy = OPTIONAL
+		self.refraction_index = OPTIONAL
+		self.reflectivity = OPTIONAL
+		self.efficiency = OPTIONAL
+		self.specular_lobe = OPTIONAL
+		self.specular_spike = OPTIONAL
+		self.backscatter = OPTIONAL
+		self.sigma_alpha = OPTIONAL
+
 def main():
 	# Provides the -h, --help message
 	desc_str = "   SCI-G sql interface\n"
@@ -178,6 +194,7 @@ def main():
 		add_hit_fields_to_sqlite_if_needed(       GHit(),        sqlitedb )
 		add_pars_fields_to_sqlite_if_needed(      GParameters(), sqlitedb )
 		add_cad_fields_to_sqlite_if_needed(       GCAD(),        sqlitedb )
+		add_mirror_fields_to_sqlite_if_needed(    GMirror(),     sqlitedb )
 
 
 	if args.l != NGIVEN:
@@ -259,6 +276,8 @@ def create_sqlite_database( sqlitedb ):
 	# Create cad table with one column
 	sql.execute( '''CREATE TABLE cad (id integer primary key)''' )
 
+	# Create mirrors table with one column
+	sql.execute( '''CREATE TABLE mirrors (id integer primary key)''' )
 
 	# Save (commit) the changes
 	sqlitedb.commit()
@@ -368,6 +387,24 @@ def add_cad_fields_to_sqlite_if_needed( gcad, sqlitedb ):
 		for field in gcad.__dict__:
 			sql_type = sqltype_of_variable( gcad.__dict__[ field ] )
 			add_column( sqlitedb, "cad", field, sql_type )
+	sqlitedb.commit()
+
+def add_mirror_fields_to_sqlite_if_needed( gmirror, sqlitedb ):
+	# check if the pars table has any columns
+	sql = sqlitedb.cursor()
+	sql.execute( "SELECT name FROM PRAGMA_TABLE_INFO('mirrors');" )
+	fields = sql.fetchall()
+
+	# if there is only one column, add the columns
+	if len( fields ) == 1:
+		add_column( sqlitedb, "mirrors", "system", "TEXT" )
+		add_column( sqlitedb, "mirrors", "variation", "TEXT" )
+		add_column( sqlitedb, "mirrors", "run", "INTEGER" )
+
+		# add columns from gmirror class
+		for field in gmirror.__dict__:
+			sql_type = sqltype_of_variable( gmirror.__dict__[ field ] )
+			add_column( sqlitedb, "mirrors", field, sql_type )
 	sqlitedb.commit()
 
 def sqltype_of_variable( variable ) -> str:

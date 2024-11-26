@@ -18,8 +18,8 @@ sub insert_bank_variable {
 
     my %configuration = %{+shift};
 
+    my $system = $configuration{"detector_name"};
     my $varia = $configuration{"variation"};
-    my $runno = $configuration{"run_number"};
 
     my $bname = shift;        # bank name
     my $lname = shift;        # variable name
@@ -31,15 +31,16 @@ sub insert_bank_variable {
     state $counter_text = 0;
     state $counter_mysql = 0;
     state $counter_sqlite = 0;
-
+    state $this_variation = "";
 
     # TEXT Factory
-    if ($configuration{"factory"} eq "TEXT") {
+    if ($configuration{"factory"} eq "TEXT" || $this_variation ne $varia) {
         my $file = $configuration{"detector_name"} . "__bank.txt";
         if ($counter_text == 0) {
             `rm -f $file`;
             print "Overwriting if existing: ", $file, "\n";
             $counter_text = 1;
+            $this_variation = $varia;
         }
 
         open(my $info, ">>", $file) or die "Could not open file '$file': $!";
@@ -58,15 +59,15 @@ sub insert_bank_variable {
     # SQLITE Factory
     if ($configuration{"factory"} eq "SQLITE") {
         my $dbh = open_db(%configuration);
-        my $system = $configuration{"detector_name"};
 
         # first time this module is run, delete everything in geometry table for this variation, system and run number
-        if ($counter_sqlite == 0) {
+        if ($counter_sqlite == 0 || $this_variation ne $varia ) {
             my $sql = "DELETE FROM banks WHERE system = ?";
             my $sth = $dbh->prepare($sql);
             $sth->execute($system);
             print "   > Deleted all banks for system $system \n";
             $counter_sqlite = 1;
+            $this_variation = $varia;
         }
 
         my $mnames_string = "system, bank_name, variable_name, description, int_id, type";
@@ -89,7 +90,7 @@ sub insert_bank_variable {
     }
 
     if ($configuration{"verbosity"} > 0) {
-        print "  + variable $lname uploaded successfully for variation \"$varia\" \n";
+        print "  + variable $lname uploaded successfully for system: $system, variation: \"$varia\" \n";
     }
 
 }

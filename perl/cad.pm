@@ -34,6 +34,7 @@ sub print_cad {
     my %configuration = %{+shift};
     my %cad = %{+shift};
 
+    my $system = $configuration{"detector_name"};
     my $varia = $configuration{"variation"};
     my $runno = $configuration{"run_number"};
 
@@ -59,7 +60,7 @@ sub print_cad {
     state $counter_text = 0;
     state $counter_mysql = 0;
     state $counter_sqlite = 0;
-
+    state $this_variation = "";
 
     # MYSQL Factory
     if ($configuration{"factory"} eq "MYSQL") {
@@ -69,37 +70,37 @@ sub print_cad {
     if ($configuration{"factory"} eq "SQLITE") {
 
         my $dbh = open_db(%configuration);
-        my $system = $configuration{"detector_name"};
 
-         # first time this module is run, delete everything in geometry table for this variation, system and run number
-         if ($counter_sqlite == 0) {
-             my $sql = "DELETE FROM cad WHERE system = ?";
-             my $sth = $dbh->prepare($sql);
-             $sth->execute($system);
-             print "   > Deleted all cad entries for system $system \n";
-             $counter_sqlite = 1;
-         }
+        # first time this module is run, delete everything in geometry table for this variation, system and run number
+        if ($counter_sqlite == 0 || $this_variation ne $varia) {
+            my $sql = "DELETE FROM cad WHERE system = ?";
+            my $sth = $dbh->prepare($sql);
+            $sth->execute($system);
+            print "   > Deleted all cad entries for system $system \n";
+            $counter_sqlite = 1;
+            $this_variation = $varia;
+        }
 
-         my $mnames_string = "system, variation, run, name, cad_subdir, sensitivity, hit_type, identifiers, visible, style, position, rotation, mfield, mother, material, color";
+        my $mnames_string = "system, variation, run, name, cad_subdir, sensitivity, hit_type, identifiers, visible, style, position, rotation, mfield, mother, material, color";
 
-         # for each name in $mnames_string, we need to add a ? to the values string
-         my $qvalues_string = "";
-         my @names = split(/\s+/, $mnames_string);
-         foreach my $name (@names) {
-             $qvalues_string = $qvalues_string . "?, ";
-         }
-         # remove last comma from $qvalues_string
-         $qvalues_string = substr($qvalues_string, 0, -2);
+        # for each name in $mnames_string, we need to add a ? to the values string
+        my $qvalues_string = "";
+        my @names = split(/\s+/, $mnames_string);
+        foreach my $name (@names) {
+            $qvalues_string = $qvalues_string . "?, ";
+        }
+        # remove last comma from $qvalues_string
+        $qvalues_string = substr($qvalues_string, 0, -2);
 
-         my $sql = "INSERT INTO cad ($mnames_string) VALUES ($qvalues_string)";
+        my $sql = "INSERT INTO cad ($mnames_string) VALUES ($qvalues_string)";
 
-         my $sth = $dbh->prepare($sql);
-         $sth->execute($system, $varia, $runno, $lname, $lcad_subdir, $lsensitivity, $lhit_type, $lidentifiers, $lvisible, $lstyle, $lposition, $lrotation, $lmfield, $lmother, $lmaterial, $lcolor)
-             or die "SQL Error: $DBI::errstr\n";
+        my $sth = $dbh->prepare($sql);
+        $sth->execute($system, $varia, $runno, $lname, $lcad_subdir, $lsensitivity, $lhit_type, $lidentifiers, $lvisible, $lstyle, $lposition, $lrotation, $lmfield, $lmother, $lmaterial, $lcolor)
+            or die "SQL Error: $DBI::errstr\n";
     }
 
     if ($configuration{"verbosity"} > 0) {
-        print "  + CAD $lname uploaded successfully for variation \"$varia\" and Run $runno \n";
+        print "  + CAD $lname uploaded successfully for system: $system, variation: \"$varia\", run: $runno \n";
     }
 }
 

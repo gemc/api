@@ -112,14 +112,16 @@ sub upload_parameter {
     state $counter_text = 0;
     state $counter_mysql = 0;
     state $counter_sqlite = 0;
+    state $this_variation = "";
 
     # TEXT Factory
-    if ($configuration{"factory"} eq "TEXT") {
+    if ($configuration{"factory"} eq "TEXT" || $this_variation ne $varia) {
         my $file = $configuration{"detector_name"} . "__parameters_" . $varia . ".txt";
         if ($counter_text == 0) {
             `rm -f $file`;
             print "Overwriting if existing: ", $file, "\n";
             $counter_text = 1;
+            $this_variation = $varia;
         }
 
         open(my $info, ">>$file");
@@ -147,12 +149,13 @@ sub upload_parameter {
         my $system = $configuration{"detector_name"};
 
         # first time this module is run, delete everything in geometry table for this variation, system and run number
-        if ($counter_sqlite == 0) {
+        if ($counter_sqlite == 0 || $this_variation ne $varia) {
             my $sql = "DELETE FROM parameters WHERE system = ? and variation = ? and run = ?";
             my $sth = $dbh->prepare($sql);
             $sth->execute($system);
             print "   > Deleted all parameters for system $system \n";
             $counter_sqlite = 1;
+            $this_variation = $varia;
         }
 
         my $mnames_string = "system, variation, run, parameter_name, value, unit, description, authors, emails, document, variable_name, drawing_author, document_date";
@@ -208,7 +211,6 @@ sub get_parameters {
     if ($configuration{"factory"} eq "SQLITE") {
         my $dbh = open_db(%configuration);
 
-
         # Get the correct run ranges and the latest version
         my $query = $dbh->prepare("SELECT * from parameters where variation = '$varia' and run = '$runno' ");
         $query->execute();
@@ -220,7 +222,6 @@ sub get_parameters {
         }
 
         $dbh->disconnect();
-
     }
 
     if ($configuration{"verbosity"} > 0) {

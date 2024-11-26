@@ -88,12 +88,13 @@ sub print_hit
         my $system = $configuration{"detector_name"};
 
         # first time this module is run, delete everything in geometry table for this variation, system and run number
-        if ($counter_sqlite == 0) {
+        if ($counter_sqlite == 0 || $this_variation ne $varia) {
             my $sql = "DELETE FROM hits WHERE system = ?";
             my $sth = $dbh->prepare($sql);
             $sth->execute($system);
             print "   > Deleted all hits for system $system \n";
             $counter_sqlite = 1;
+            $this_variation = $varia;
         }
 
         my $mnames_string = "system, variation, run, name, description, identifiers, signalThreshold, timeWindow, prodThreshold, maxStep, riseTime, fallTime, mvToMeV, pedestal, delay";
@@ -114,7 +115,7 @@ sub print_hit
 	}
 	
 	if($configuration{"verbosity"} > 0)	{
-		print "  + Hit $lname uploaded successfully for variation \"$varia\" \n";
+		print "  + Hit $lname uploaded successfully for system: system: $system, variation: \"$varia\", run: $runno \n";
 	}
 }
 

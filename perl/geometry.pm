@@ -115,12 +115,13 @@ sub print_det {
         my $system = $configuration{"detector_name"};
 
         # first time this module is run, delete everything in geometry table for this variation, system and run number
-        if ($counter_sqlite == 0) {
+        if ($counter_sqlite == 0 || $this_variation ne $varia) {
             my $sql = "DELETE FROM geometry WHERE system = ?";
             my $sth = $dbh->prepare($sql);
             $sth->execute($system);
             print "   > Deleted all volumes for system $system \n";
             $counter_sqlite = 1;
+            $this_variation = $varia;
         }
 
         my $names_string = "system, variation, run, name, mother, description, pos, rot, col, type, dimensions, material, magfield, ncopy, pMany, exist, visible, style, sensitivity, hitType, identity";
@@ -142,7 +143,7 @@ sub print_det {
     }
 
     if ($configuration{"verbosity"} > 0) {
-        print "  + CAD $lname uploaded successfully for variation \"$varia\" and Run $runno \n";
+        print "  + CAD $lname uploaded successfully for system: $system, variation: \"$varia\", run: $runno \n";
     }
 }
 
