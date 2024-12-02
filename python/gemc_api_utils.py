@@ -11,7 +11,7 @@
 #	Class members (all members are text strings):
 #	name			- The name of the detector (in the broad sense).  Think project name here.
 #	variation			- The name of the project variation.  For example, one could have variations of the project where
-#					- a volume has a different size or material.  The variation defaults to 'original'
+#					- a volume has a different size or material.  The variation defaults to 'default'
 #	factory			- The configuration factory defines how the generated files that gemc uses are stored.  Currently this
 #					- API only supports "TEXT".  Other choices might include "MYSQL" or a java format
 #	dbhost			- The hostname of the mysql database server where gemc detectors, materials, etc. may be stored
@@ -25,7 +25,7 @@
 
 # Configuration class definition
 class MyConfiguration():
-	def __init__(self, detector_name="none", variation="original", factory="TEXT", dbhost="", 
+	def __init__(self, detector_name="none", variation="default", factory="TEXT", dbhost="",
 	rmin=0, rmax=0, comment="none", verbosity=1):
 		self.detector_name = detector_name
 		self.variation = variation
