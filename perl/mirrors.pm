@@ -87,7 +87,7 @@ sub init_mir {
 
     # If materialOptProperties is defined, use the material
     # optical properties instead of defining new ones
-    $mir{"maptOptProps"} = "notDefined";
+    $mir{"maptOptProps"} = "none";
 
     # - At least one of the following quantities arrays
     $mir{"photonEnergy"} = "none";
@@ -135,7 +135,7 @@ sub print_mir {
     my $lbackscatter = trim($mirs{"backscatter"});
     my $lsigma_alpha = trim($mirs{"sigmaAlhpa"});
 
-    if ($lmat_opt_props eq "notDefined") {
+    if ($lmat_opt_props eq "none") {
         if ($lphoton_energy eq "none") {
             print " !! Error: there is no material with optical properties associated with this mirror.\n";
             print " !! Optical properties must be defined.\n";
