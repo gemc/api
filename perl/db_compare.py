@@ -56,6 +56,7 @@ def main():
 			if nlines != len(lines):
 				print(
 					f"\nNumber of lines in the file ({len(lines)}) does not match the number of lines in the database ({result[0]}).")
+				exit (1)
 			else:
 				print(
 					f"\nNumber of lines in the file ({len(lines)}) matches the number of lines in the database ({result[0]}).")
@@ -67,7 +68,7 @@ def main():
 				print(f"Line {i + 1} does not match the database.")
 				match=0
 				print(line)
-				#break
+				exit (1)
 		if match==1:
 			print("\nAll lines match the database.")
 
